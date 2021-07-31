@@ -7,7 +7,6 @@ const app = express()
 app.engine('hbs', exphbs({ dafaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 
-
 app.get('/', (req, res) => {
   res.render('index')
 })
