@@ -1,11 +1,13 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 const app = express()
 
 app.engine('hbs', exphbs({ dafaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
+
+app.use(express.static('.'));
 
 app.get('/', (req, res) => {
   res.render('index')
