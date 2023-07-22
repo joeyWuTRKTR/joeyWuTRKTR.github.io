@@ -1,26 +1,15 @@
 baseurl: https://example.com
-languageCode: en-us
+languageCode: en
 theme: hugo-theme-stack
 paginate: 5
 title: Example Site
 
 languages:
     en:
-        languageName: English
-        title: Example Site
-        description: Example description
-        weight: 1
-    zh-cn:
         languageName: 中文
-        title: 演示站点
+        title: Joey Web Dev
         description: 演示说明
         weight: 2
-    ar:
-        languageName: عربي
-        languagedirection: rtl
-        title: موقع تجريبي
-        description: وصف تجريبي
-        weight: 3
 
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
@@ -37,7 +26,7 @@ DefaultContentLanguage: en
 hasCJKLanguage: false
 
 permalinks:
-    post: /p/:slug/
+    post: /:year/:month/:slug/
     page: /:slug/
 
 params:
@@ -56,8 +45,8 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        emoji: 🍥
-        subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+#        emoji: 🍥
+        subtitle: 哈囉，歡迎來到Joey的開發技術部落格，紀錄演算法、地理空間模型、資料庫、Node.js，合作或私訊：godatascial@gmail.com，履歷：https://www.cakeresume.com/joey-wu-wen-jin
         avatar:
             enabled: true
             local: true
@@ -195,7 +184,6 @@ params:
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
 menu:
     main: []
-
     social:
         - identifier: github
           name: GitHub
