@@ -1,26 +1,24 @@
 ---
-title: Geohash 計算點範圍的好工具
-description: 这是一个副标题
-date: 2020-09-10
+title: 經緯度網格化 - 淺顯易懂 Geohash 編碼
+description: Geohash 將經緯度變成網格編碼，用字母比對經緯度彼此的遠近。
+date: 2022-07-24
 slug: geohash
 categories:
-- Test
-- 测试
+- 地理資訊模型
 ---
 
 
-## Introduce Geohash :
+## 為什麼要用Geohash :
 Geohash是一種編碼方式
 將“經緯度座標”轉成由數字和英文字母所代表的“網格(Grid)”範圍
+因此可以藉由比對網格的字母來縮小查找範圍！
 
 舉例來說：  
 台北101的座標("25.03463", "121.56441")  
 在精度8的情況下會轉換成"wsqqqm2t"
-![taipei101-coordinate-google-map.png](/img/20230720-parking-lot-geohash/taipei101-coordinate-google-map.png)
 #### 試玩看看Geohash(圖片可以點擊)：
-Sunny在哪？
-Geek在哪？
 [![geohash-demo-tool.png](/img/20230720-parking-lot-geohash/geohash-demo-tool.png)](https://phrozen.github.io/geohash/)
+
 
 
 ## 越多編碼數量，範圍逐漸縮小

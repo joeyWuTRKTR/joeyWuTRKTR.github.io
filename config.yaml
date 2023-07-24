@@ -8,7 +8,7 @@ languages:
     en:
         languageName: 中文
         title: Joey Web Dev
-        description: 演示说明
+        description: Joey Web Dev
         weight: 2
 
 # Change it to your Disqus shortname before using
@@ -57,11 +57,11 @@ params:
         toc: true
         readingTime: true
         license:
-            enabled: true
-            default: Licensed under CC BY-NC-SA 4.0
+            enabled: false
+#            default: Licensed under CC BY-NC-SA 4.0
 
     comments:
-        enabled: true
+        enabled: false
         provider: disqus
 
         disqusjs:
@@ -140,15 +140,15 @@ params:
     widgets:
         homepage:
             - type: search
-            - type: archives
-              params:
-                  limit: 5
-            - type: categories
-              params:
-                  limit: 10
-            - type: tag-cloud
-              params:
-                  limit: 10
+#            - type: archives
+#              params:
+#                  limit: 5
+#            - type: categories
+#              params:
+#                  limit: 10
+#            - type: tag-cloud
+#              params:
+#                  limit: 10
         page:
             - type: toc
 
@@ -185,17 +185,17 @@ params:
 menu:
     main: []
     social:
-        - identifier: github
-          name: GitHub
-          url: https://github.com/CaiJimmy/hugo-theme-stack
+        - identifier: email
+          name: email
+          url: mailto:godatascial@gmail.com
           params:
-              icon: brand-github
+              icon: email
 
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com
+        - identifier: resume
+          name: resume
+          url: https://www.cakeresume.com/joey-wu-wen-jin
           params:
-              icon: brand-twitter
+              icon: resume
 
 related:
     includeNewer: true
