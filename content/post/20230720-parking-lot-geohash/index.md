@@ -238,19 +238,19 @@ console.log(bboxes);
 
 ## 參考資料
 ### 影片:
-**如何搜索附近的商家? Geohash （上）**  
+** 1. 如何搜索附近的商家? Geohash （上）**  
 https://www.youtube.com/watch?v=NCvYkJWenb8&t=745s&ab_channel=HuaHua  
 
-**如何搜索附近的商家? Geohash （下）**  
+** 2. 如何搜索附近的商家? Geohash （下）**  
 https://www.youtube.com/watch?v=_UAkuUVzwcY&ab_channel=HuaHua
 
 ### Demo工具:
-**GeoHash Demo**
+**1. GeoHash Demo**  
 https://phrozen.github.io/geohash/  
 
-**ngeohash:**  
+**2. ngeohash(Node.js)**  
 https://www.npmjs.com/package/ngeohash
 
 ### 文章：
-**空间索引之GeoHash**  
+**1. 空间索引之GeoHash**  
 https://blog.csdn.net/wangshuminjava/article/details/106665991
