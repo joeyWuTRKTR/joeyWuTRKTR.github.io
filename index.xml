@@ -576,20 +576,20 @@ alt="geo-bboxes.png"
 >&lt;/p>
 &lt;h2 id="參考資料">參考資料&lt;/h2>
 &lt;h3 id="影片">影片:&lt;/h3>
-&lt;p>&lt;strong>如何搜索附近的商家? Geohash （上）&lt;/strong>&lt;br>
+&lt;p>** 1. 如何搜索附近的商家? Geohash （上）**&lt;br>
 &lt;a class="link" href="https://www.youtube.com/watch?v=NCvYkJWenb8&amp;amp;t=745s&amp;amp;ab_channel=HuaHua" target="_blank" rel="noopener"
 >https://www.youtube.com/watch?v=NCvYkJWenb8&amp;t=745s&amp;ab_channel=HuaHua&lt;/a>&lt;/p>
-&lt;p>&lt;strong>如何搜索附近的商家? Geohash （下）&lt;/strong>&lt;br>
+&lt;p>** 2. 如何搜索附近的商家? Geohash （下）**&lt;br>
 &lt;a class="link" href="https://www.youtube.com/watch?v=_UAkuUVzwcY&amp;amp;ab_channel=HuaHua" target="_blank" rel="noopener"
 >https://www.youtube.com/watch?v=_UAkuUVzwcY&amp;ab_channel=HuaHua&lt;/a>&lt;/p>
 &lt;h3 id="demo工具">Demo工具:&lt;/h3>
-&lt;p>&lt;strong>GeoHash Demo&lt;/strong>
+&lt;p>&lt;strong>1. GeoHash Demo&lt;/strong>&lt;br>
 &lt;a class="link" href="https://phrozen.github.io/geohash/" target="_blank" rel="noopener"
 >https://phrozen.github.io/geohash/&lt;/a>&lt;/p>
-&lt;p>&lt;strong>ngeohash:&lt;/strong>&lt;br>
+&lt;p>&lt;strong>2. ngeohash(Node.js)&lt;/strong>&lt;br>
 &lt;a class="link" href="https://www.npmjs.com/package/ngeohash" target="_blank" rel="noopener"
 >https://www.npmjs.com/package/ngeohash&lt;/a>&lt;/p>
 &lt;h3 id="文章">文章：&lt;/h3>
-&lt;p>&lt;strong>空间索引之GeoHash&lt;/strong>&lt;br>
+&lt;p>&lt;strong>1. 空间索引之GeoHash&lt;/strong>&lt;br>
 &lt;a class="link" href="https://blog.csdn.net/wangshuminjava/article/details/106665991" target="_blank" rel="noopener"
 >https://blog.csdn.net/wangshuminjava/article/details/106665991&lt;/a>&lt;/p></description></item></channel></rss>
