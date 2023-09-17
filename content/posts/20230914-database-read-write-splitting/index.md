@@ -1,7 +1,6 @@
 ---
 title: "資料庫多數據源及讀寫分離 Database Multi-DataSource Read Write Splitting(Mybatis & JOOQ)"
 date: 2023-09-14T07:43:42+08:00
-draft: true
 slug: database-read-write-splitting
 categories:
 - Database
