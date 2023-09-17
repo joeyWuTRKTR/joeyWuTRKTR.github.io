@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey Web Dev</title><link>https://example.com/post/</link><description>Recent content in Posts on Joey Web Dev</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 24 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml"/><item><title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title><link>https://example.com/2022/07/geohash/</link><pubDate>Sun, 24 Jul 2022 00:00:00 +0000</pubDate><guid>https://example.com/2022/07/geohash/</guid><description>&lt;h2 id="為什麼要用geohash">為什麼要用Geohash&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey Web Dev</title><link>https://example.com/posts/</link><description>Recent content in Posts on Joey Web Dev</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 24 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title><link>https://example.com/2022/07/geohash/</link><pubDate>Sun, 24 Jul 2022 00:00:00 +0000</pubDate><guid>https://example.com/2022/07/geohash/</guid><description>&lt;h2 id="為什麼要用geohash">為什麼要用Geohash&lt;/h2>
 &lt;p>將二維座標映射成一串字串，表示一個特定的長方形網格範圍&lt;br>
 台北101的座標(&amp;ldquo;25.03463&amp;rdquo;, &amp;ldquo;121.56441&amp;rdquo;)，在精度8的情況下會轉換成&amp;quot;wsqqqm2t&amp;quot;&lt;br>
 字串越長、範圍越小、精度越高&lt;br>
@@ -591,5 +591,5 @@ alt="geo-bboxes.png"
 >https://www.npmjs.com/package/ngeohash&lt;/a>&lt;/p>
 &lt;h3 id="文章">文章：&lt;/h3>
 &lt;p>&lt;strong>1. 空间索引之GeoHash&lt;/strong>&lt;br>
-&lt;a class="link" href="https://blog.csdn.net/wangshuminjava/article/details/106665991" target="_blank" rel="noopener"
->https://blog.csdn.net/wangshuminjava/article/details/106665991&lt;/a>&lt;/p></description></item></channel></rss>
+&lt;a class="link" href="https://www.biaodianfu.com/geohash.html" target="_blank" rel="noopener"
+>https://www.biaodianfu.com/geohash.html&lt;/a>&lt;/p></description></item></channel></rss>
