@@ -7,8 +7,8 @@ title: Example Site
 languages:
     en:
         languageName: 中文
-        title: Joey Web Dev
-        description: Joey Web Dev
+        title: Joey 軟體技術網站
+        description: Joey 軟體技術網站
         weight: 2
 
 # Change it to your Disqus shortname before using
@@ -45,8 +45,7 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-#        emoji: 🍥
-        subtitle: 哈囉，歡迎來到Joey的開發技術部落格，紀錄演算法、地理空間模型、資料庫、Node.js，合作或私訊：godatascial@gmail.com，履歷：https://www.cakeresume.com/joey-wu-wen-jin
+        subtitle: 運點科技全端工程師，交通大學工業工程與管理學系畢業，就業後想朝著工作/生活平衡，2021年開始網頁開發工程師的工作，平常沒事都在衝浪跟喝咖啡看劇，軟體開發Node.js & Java
         avatar:
             enabled: true
             local: true
@@ -185,15 +184,21 @@ params:
 menu:
     main: []
     social:
-        - identifier: email
-          name: email
-          url: mailto:godatascial@gmail.com
+        - identifier: linkedin
+          name: resume
+          url: https://www.linkedin.com/in/wen-jin-wu/?locale=en_US
           params:
-              icon: email
+              icon: linkedin
+
+        - identifier: instagram
+          name: instagram
+          url: https://www.instagram.com/maomao5986/
+          params:
+              icon: instagram
 
         - identifier: resume
           name: resume
-          url: https://www.cakeresume.com/joey-wu-wen-jin
+          url: https://www.cakeresume.com/s--KX5vfCk71en_utP2Ssii3g--/joey-wu-wen-jin
           params:
               icon: resume
 
