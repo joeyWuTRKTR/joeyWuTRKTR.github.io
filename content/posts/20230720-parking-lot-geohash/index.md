@@ -1,8 +1,9 @@
 ---
 title: 經緯度網格化 - 淺顯易懂 Geohash 編碼
-description: Geohash 將經緯度變成長方形網格，字串取得相對位置。
+description: Geohash 將經緯度變成長方形網格，字串取得相對位置
 date: 2022-07-24
 slug: geohash
+image: /img/20230720-parking-lot-geohash/cover.jpg
 categories:
 - 地理資訊模型
 ---

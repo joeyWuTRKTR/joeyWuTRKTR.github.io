@@ -1,7 +1,9 @@
 ---
-title: "資料庫多數據源及讀寫分離(Mybatis & JOOQ)"
+title: "多數據源讀寫分離(Mybatis & JOOQ)"
 date: 2023-09-14T07:43:42+08:00
-slug: database-read-write-splitting
+description: Mybatis/Jooq多數據源切換、Interface實現AOP註解
+slug: multiple-datasource
+image: /img/20230914-database-read-write-splitting/cover.jpg
 categories:
 - Database
 - Mybatis

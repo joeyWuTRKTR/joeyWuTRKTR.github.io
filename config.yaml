@@ -45,7 +45,7 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        subtitle: 運點科技全端工程師，交通大學工業工程與管理學系畢業，就業後想朝著工作/生活平衡，2021年開始網頁開發工程師的工作，平常沒事都在衝浪跟喝咖啡看劇，軟體開發Node.js & Java
+        subtitle: 全端工程師、衝浪愛好者
         avatar:
             enabled: true
             local: true
