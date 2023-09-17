@@ -26,12 +26,12 @@ DefaultContentLanguage: en
 hasCJKLanguage: false
 
 permalinks:
-    post: /:year/:month/:slug/
+    posts: /:year/:month/:slug/
     page: /:slug/
 
 params:
     mainSections:
-        - post
+        - posts
     featuredImageField: image
     rssFullContent: true
     favicon:  # e.g.: favicon placed in `static/favicon.ico` of your site folder, then set this field to `/favicon.ico` (`/` is necessary)
@@ -50,7 +50,7 @@ params:
         avatar:
             enabled: true
             local: true
-            src: img/avatar.png
+            src: img/avatar.jpg
 
     article:
         math: false

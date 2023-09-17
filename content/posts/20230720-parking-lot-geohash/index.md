@@ -253,4 +253,4 @@ https://www.npmjs.com/package/ngeohash
 
 ### 文章：
 **1. 空间索引之GeoHash**  
-https://blog.csdn.net/wangshuminjava/article/details/106665991
+https://www.biaodianfu.com/geohash.html
