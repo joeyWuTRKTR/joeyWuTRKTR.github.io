@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Joey 軟體技術網站</title><link>https://example.com/</link><description>Recent content on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 14 Sep 2023 07:43:42 +0800</lastBuildDate><atom:link href="https://example.com/index.xml" rel="self" type="application/rss+xml"/><item><title>資料庫多數據源及讀寫分離(Mybatis &amp; JOOQ)</title><link>https://example.com/2023/09/database-read-write-splitting/</link><pubDate>Thu, 14 Sep 2023 07:43:42 +0800</pubDate><guid>https://example.com/2023/09/database-read-write-splitting/</guid><description>&lt;h2 id="介紹讀寫分離">介紹讀寫分離&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Joey 軟體技術網站</title><link>https://example.com/</link><description>Recent content on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 14 Sep 2023 07:43:42 +0800</lastBuildDate><atom:link href="https://example.com/index.xml" rel="self" type="application/rss+xml"/><item><title>多數據源讀寫分離(Mybatis &amp; JOOQ)</title><link>https://example.com/2023/09/multiple-datasource/</link><pubDate>Thu, 14 Sep 2023 07:43:42 +0800</pubDate><guid>https://example.com/2023/09/multiple-datasource/</guid><description>&lt;img src="https://example.com/img/20230914-database-read-write-splitting/cover.jpg" alt="Featured image of post 多數據源讀寫分離(Mybatis &amp; JOOQ)" />&lt;h2 id="介紹讀寫分離">介紹讀寫分離&lt;/h2>
 &lt;p>產品使用人數的增加，隨之不可避免的資料庫負擔增加&lt;br>
 單一查詢變慢、頻繁查詢都有機率造成資料庫Container crash&lt;/p>
 &lt;p>資料庫的資源供不應求的情況下&lt;br>
@@ -907,7 +907,7 @@ getAdvice會在getPointcut為true的時候被觸發&lt;/p>
 &lt;p>mybatis團隊有提供多數據源的套件
 &lt;a class="link" href="https://gitee.com/baomidou/dynamic-datasource-spring-boot-starter" target="_blank" rel="noopener"
 >https://gitee.com/baomidou/dynamic-datasource-spring-boot-starter&lt;/a>&lt;/p>
-&lt;p>公司的專案將SQL寫在xml，mapper到interface故不適用，如果是寫在class類的專案，可以考慮看看&lt;/p></description></item><item><title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title><link>https://example.com/2022/07/geohash/</link><pubDate>Sun, 24 Jul 2022 00:00:00 +0000</pubDate><guid>https://example.com/2022/07/geohash/</guid><description>&lt;h2 id="為什麼要用geohash">為什麼要用Geohash&lt;/h2>
+&lt;p>公司的專案將SQL寫在xml，mapper到interface故不適用，如果是寫在class類的專案，可以考慮看看&lt;/p></description></item><item><title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title><link>https://example.com/2022/07/geohash/</link><pubDate>Sun, 24 Jul 2022 00:00:00 +0000</pubDate><guid>https://example.com/2022/07/geohash/</guid><description>&lt;img src="https://example.com/img/20230720-parking-lot-geohash/cover.jpg" alt="Featured image of post 經緯度網格化 - 淺顯易懂 Geohash 編碼" />&lt;h2 id="為什麼要用geohash">為什麼要用Geohash&lt;/h2>
 &lt;p>將二維座標映射成一串字串，表示一個特定的長方形網格範圍&lt;br>
 台北101的座標(&amp;ldquo;25.03463&amp;rdquo;, &amp;ldquo;121.56441&amp;rdquo;)，在精度8的情況下會轉換成&amp;quot;wsqqqm2t&amp;quot;&lt;br>
 字串越長、範圍越小、精度越高&lt;br>
@@ -1501,4 +1501,18 @@ alt="geo-bboxes.png"
 &lt;h3 id="文章">文章：&lt;/h3>
 &lt;p>&lt;strong>1. 空间索引之GeoHash&lt;/strong>&lt;br>
 &lt;a class="link" href="https://www.biaodianfu.com/geohash.html" target="_blank" rel="noopener"
->https://www.biaodianfu.com/geohash.html&lt;/a>&lt;/p></description></item></channel></rss>
+>https://www.biaodianfu.com/geohash.html&lt;/a>&lt;/p></description></item><item><title>About</title><link>https://example.com/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://example.com/about/</guid><description>&lt;p>我是Joey，歡迎來到我的部落格！&lt;br>
+畢業於交通大學工業工程與管理學系&lt;br>
+目前任職於運點科技，擔任網頁/APP全端工程師&lt;/p>
+&lt;p>沒事會衝浪、喝咖啡、研究軟體技術&lt;br>
+最近勤學游泳、偶爾瑜珈&lt;/p>
+&lt;p>目前是個日出衝浪、通勤上班的小小工程師&lt;/p>
+&lt;p>履歷：&lt;br>
+&lt;a class="link" href="https://www.cakeresume.com/s--KX5vfCk71en_utP2Ssii3g--/joey-wu-wen-jin" target="_blank" rel="noopener"
+>https://www.cakeresume.com/s--KX5vfCk71en_utP2Ssii3g--/joey-wu-wen-jin&lt;/a>&lt;/p>
+&lt;p>LinkedIn:&lt;br>
+&lt;a class="link" href="https://www.linkedin.com/in/wen-jin-wu/?locale=en_US" target="_blank" rel="noopener"
+>https://www.linkedin.com/in/wen-jin-wu/?locale=en_US&lt;/a>&lt;/p>
+&lt;p>Instagram:&lt;br>
+&lt;a class="link" href="https://www.instagram.com/maomao5986/" target="_blank" rel="noopener"
+>https://www.instagram.com/maomao5986/&lt;/a>&lt;/p></description></item></channel></rss>

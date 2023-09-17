@@ -1,0 +1,690 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Mybatis/Jooq多數據源切換、Interface實現AOP註解"><title>多數據源讀寫分離(Mybatis & JOOQ)</title><link rel=canonical href=https://example.com/2023/09/multiple-datasource/><link rel=stylesheet href=/scss/style.min.519f303bc7f74f3d2c30221a8b7bc24f3f9f260cd5b385faa5f4085c786e6bd2.css><meta property="og:title" content="多數據源讀寫分離(Mybatis & JOOQ)"><meta property="og:description" content="Mybatis/Jooq多數據源切換、Interface實現AOP註解"><meta property="og:url" content="https://example.com/2023/09/multiple-datasource/"><meta property="og:site_name" content="Joey 軟體技術網站"><meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:published_time" content="2023-09-14T07:43:42+08:00"><meta property="article:modified_time" content="2023-09-14T07:43:42+08:00"><meta property="og:image" content="https://example.com/img/20230914-database-read-write-splitting/cover.jpg"><meta name=twitter:title content="多數據源讀寫分離(Mybatis & JOOQ)"><meta name=twitter:description content="Mybatis/Jooq多數據源切換、Interface實現AOP註解"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://example.com/img/20230914-database-read-write-splitting/cover.jpg"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu9f771d7e2e2f10d1506ee7e89d87fb38_3829958_300x0_resize_q75_box.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Joey 軟體技術網站</a></h1><h2 class=site-description>全端工程師、衝浪愛好者</h2></div></header><ol class=social-menu><li><a href=https://www.instagram.com/maomao5986/ target=_blank title=instagram rel=me><svg width="800" height="800" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint0_radial_87_7153)"/><rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint1_radial_87_7153)"/><rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint2_radial_87_7153)"/><path d="M23 10.5C23 11.3284 22.3284 12 21.5 12S20 11.3284 20 10.5C20 9.67157 20.6716 9 21.5 9S23 9.67157 23 10.5z" fill="#fff"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16 21c2.7614.0 5-2.2386 5-5 0-2.7614-2.2386-5-5-5-2.7614.0-5 2.2386-5 5 0 2.7614 2.2386 5 5 5zm0-2c1.6569.0 3-1.3431 3-3s-1.3431-3-3-3-3 1.3431-3 3 1.3431 3 3 3z" fill="#fff"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 15.6c0-3.3603.0-5.0405.65396-6.32394.57524-1.12898 1.49312-2.04686 2.6221-2.6221C10.5595 6 12.2397 6 15.6 6H16.4c3.3603.0 5.0405.0 6.3239.65396 1.129.57524 2.0469 1.49312 2.6221 2.6221C26 10.5595 26 12.2397 26 15.6V16.4c0 3.3603.0 5.0405-.654 6.3239C24.7708 23.8529 23.8529 24.7708 22.7239 25.346 21.4405 26 19.7603 26 16.4 26H15.6c-3.3603.0-5.0405.0-6.32394-.654C8.14708 24.7708 7.2292 23.8529 6.65396 22.7239 6 21.4405 6 19.7603 6 16.4V15.6zM15.6 8H16.4C18.1132 8 19.2777 8.00156 20.1779 8.0751 21.0548 8.14674 21.5032 8.27659 21.816 8.43597 22.5686 8.81947 23.1805 9.43139 23.564 10.184 23.7234 10.4968 23.8533 10.9452 23.9249 11.8221 23.9984 12.7223 24 13.8868 24 15.6V16.4C24 18.1132 23.9984 19.2777 23.9249 20.1779 23.8533 21.0548 23.7234 21.5032 23.564 21.816 23.1805 22.5686 22.5686 23.1805 21.816 23.564 21.5032 23.7234 21.0548 23.8533 20.1779 23.9249 19.2777 23.9984 18.1132 24 16.4 24H15.6C13.8868 24 12.7223 23.9984 11.8221 23.9249 10.9452 23.8533 10.4968 23.7234 10.184 23.564 9.43139 23.1805 8.81947 22.5686 8.43597 21.816 8.27659 21.5032 8.14674 21.0548 8.0751 20.1779 8.00156 19.2777 8 18.1132 8 16.4V15.6C8 13.8868 8.00156 12.7223 8.0751 11.8221 8.14674 10.9452 8.27659 10.4968 8.43597 10.184 8.81947 9.43139 9.43139 8.81947 10.184 8.43597 10.4968 8.27659 10.9452 8.14674 11.8221 8.0751 12.7223 8.00156 13.8868 8 15.6 8z" fill="#fff"/><defs><radialGradient id="paint0_radial_87_7153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12 23) rotate(-55.3758) scale(25.5196)"><stop stop-color="#b13589"/><stop offset=".79309" stop-color="#c62f94"/><stop offset="1" stop-color="#8a3ac8"/></radialGradient><radialGradient id="paint1_radial_87_7153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(11 31) rotate(-65.1363) scale(22.5942)"><stop stop-color="#e0e8b7"/><stop offset=".444662" stop-color="#fb8a2e"/><stop offset=".71474" stop-color="#e2425c"/><stop offset="1" stop-color="#e2425c" stop-opacity="0"/></radialGradient><radialGradient id="paint2_radial_87_7153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.500002 3) rotate(-8.1301) scale(38.8909 8.31836)"><stop offset=".156701" stop-color="#406adc"/><stop offset=".467799" stop-color="#6a45be"/><stop offset="1" stop-color="#6a45be" stop-opacity="0"/></radialGradient></defs></svg></a></li><li><a href='https://www.linkedin.com/in/wen-jin-wu/?locale=en_US' target=_blank title=resume rel=me><svg height="800" width="800" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 291.319 291.319"><g><path style="fill:#0e76a8" d="M145.659.0c80.45.0 145.66 65.219 145.66 145.66s-65.21 145.659-145.66 145.659S0 226.1.0 145.66 65.21.0 145.659.0z"/><path style="fill:#fff" d="M82.079 200.136h27.275v-90.91H82.079v90.91zm106.259-94.059c-13.237.0-25.081 4.834-33.483 15.504v-12.654H127.48v91.21h27.375v-49.324c0-10.424 9.55-20.593 21.512-20.593s14.912 10.169 14.912 20.338v49.57h27.275v-51.6C218.553 112.686 201.584 106.077 188.338 106.077zM95.589 100.141c7.538.0 13.656-6.118 13.656-13.656S103.127 72.83 95.589 72.83s-13.656 6.118-13.656 13.656S88.051 100.141 95.589 100.141z"/></g></svg></a></li><li><a href=https://www.cakeresume.com/s--KX5vfCk71en_utP2Ssii3g--/joey-wu-wen-jin target=_blank title=resume rel=me><svg height="800" width="800" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 392.533 392.533"><path style="fill:#fff" d="M306.101 84.558H193.939v31.354c0 17.325-14.093 31.354-31.354 31.354s-31.354-14.093-31.354-31.354V84.558H86.497c-6.012.0-10.925 4.848-10.925 10.925v264.339c0 6.012 4.848 10.925 10.925 10.925h219.539c6.012.0 10.925-4.849 10.925-10.925V95.418C316.962 89.471 312.048 84.558 306.101 84.558z"/><path style="fill:#56ace0" d="M97.358 347.41V107.96c0-.84.711-1.552 1.552-1.552h194.715c.84.0 1.552.711 1.552 1.552V347.41c0 .84-.711 1.552-1.552 1.552H98.909C98.069 348.962 97.358 348.25 97.358 347.41z"/><g><path style="fill:#ffc10d" d="M225.293 166.465c6.723.0 12.218-5.495 12.218-12.218.0-6.723-5.495-12.218-12.218-12.218-6.723.0-12.218 5.495-12.218 12.218C213.139 160.97 218.699 166.465 225.293 166.465z"/><path style="fill:#ffc10d" d="M225.293 220.832c-14.675.0-27.539 8.986-33.099 21.786h66.133c-5.495-12.8-18.295-21.786-33.034-21.786z"/></g><path style="fill:#fff" d="M162.586 125.479c5.236.0 9.568-4.331 9.568-9.568V84.558h-19.135v31.354C153.018 121.212 157.35 125.479 162.586 125.479z"/><g><path style="fill:#194f82" d="M225.293 188.251c18.747.0 34.004-15.192 34.004-34.004.0-18.747-15.192-34.004-34.004-34.004-18.747.0-34.004 15.192-34.004 34.004C191.354 172.994 206.61 188.251 225.293 188.251zm0-46.158c6.723.0 12.218 5.495 12.218 12.218.0 6.723-5.495 12.218-12.218 12.218-6.723.0-12.218-5.495-12.218-12.218C213.139 147.588 218.699 142.093 225.293 142.093z"/><path style="fill:#194f82" d="M225.293 199.046c-30.19.0-55.531 23.596-57.665 53.721-.259 3.038.84 6.012 2.909 8.21 2.069 2.263 4.978 3.491 7.952 3.491h93.608c3.038.0 5.947-1.228 7.952-3.491 2.069-2.263 3.103-5.172 2.909-8.21C280.889 222.642 255.547 199.046 225.293 199.046zm-33.034 43.572c5.56-12.8 18.36-21.786 33.099-21.786s27.539 8.986 33.099 21.786H192.259z"/><path style="fill:#194f82" d="M272.162 317.091H124.251c-6.012.0-10.925 4.848-10.925 10.925.0 6.012 4.848 10.925 10.925 10.925h147.911c6.012.0 10.925-4.849 10.925-10.925C283.022 322.004 278.174 317.091 272.162 317.091z"/><path style="fill:#194f82" d="M272.162 278.432H124.251c-6.012.0-10.925 4.848-10.925 10.925.0 6.012 4.848 10.925 10.925 10.925h147.911c6.012.0 10.925-4.848 10.925-10.925C283.022 283.281 278.174 278.432 272.162 278.432z"/><path style="fill:#194f82" d="M124.186 253.996h16.549c6.012.0 10.925-4.848 10.925-10.925.0-6.012-4.848-10.925-10.925-10.925h-16.549c-6.012.0-10.925 4.848-10.925 10.925s4.913 10.925 10.925 10.925z"/><path style="fill:#194f82" d="M124.121 207.838h33.552c6.012.0 10.925-4.848 10.925-10.925.0-6.012-4.848-10.925-10.925-10.925h-33.552c-6.012.0-10.925 4.848-10.925 10.925C113.196 202.99 118.044 207.838 124.121 207.838z"/><path style="fill:#194f82" d="M306.101 62.772H193.939V50.554C193.939 22.626 171.248.0 143.386.0c-27.927.0-50.554 22.626-50.554 50.554v12.218h-6.335c-18.036.0-32.711 14.675-32.711 32.711v264.339c0 18.036 14.675 32.711 32.711 32.711h219.539c18.036.0 32.711-14.675 32.711-32.711V95.418c0-17.972-14.674-32.646-32.646-32.646zM114.683 50.554c0-15.838 12.929-28.768 28.768-28.768s28.768 12.929 28.768 28.768v12.218h-19.135v-1.616c0-6.012-4.848-10.925-10.925-10.925-6.012.0-10.925 4.848-10.925 10.925v1.616h-16.549C114.683 62.772 114.683 50.554 114.683 50.554zm57.471 34.004v31.354c0 5.236-4.331 9.568-9.568 9.568s-9.568-4.267-9.568-9.568V84.558c28421709430404e-27.0 19.136.0 19.136.0zM316.962 359.822c0 6.012-4.849 10.925-10.925 10.925H86.432c-6.012.0-10.925-4.849-10.925-10.925V95.418c0-6.012 4.848-10.925 10.925-10.925h44.735v31.354c0 17.325 14.093 31.354 31.354 31.354 17.325.0 31.354-14.093 31.354-31.354V84.493h112.097c6.012.0 10.925 4.848 10.925 10.925v264.404H316.962z"/></g></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg><span>Home</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg><span>About</span></a></li><div class=menu-bottom-section><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><span>Dark Mode</span></li></div></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#介紹讀寫分離>介紹讀寫分離</a></li><li><a href=#專案現況>專案現況</a></li><li><a href=#專案架構>專案架構</a><ol><li><a href=#dynamicdatasourceenumjava>DynamicDataSourceEnum.java</a></li><li><a href=#datasourcecontextholderjava>DataSourceContextHolder.java</a></li><li><a href=#dynamicdatasourcejava>DynamicDataSource.java</a></li><li><a href=#datasourcebuilderjava>DataSourceBuilder.java</a></li><li><a href=#mysqlmasterdatasourcejava--mysqlslavedatasourcejava>MysqlMasterDataSource.java & MysqlSlaveDataSource.java</a></li><li><a href=#dbconfigurationjava>DBConfiguration.java</a><ol><li><a href=#在dbconfigurationjava檔案中加入configuration以及mapperscan>在DBConfiguration.java檔案中，加入@Configuration以及@MapperScan</a></li><li><a href=#透過建構函式把masterslave-datasource引入>透過建構函式把master/slave datasource引入</a></li><li><a href=#建立dynamicdb>建立dynamicDb</a></li><li><a href=#jooq-版本>JOOQ 版本</a></li><li><a href=#mybatis版本-建立sqlsessionfactory>Mybatis版本: 建立sqlSessionFactory</a></li><li><a href=#mybatis版本-建立transactionmanager>Mybatis版本: 建立transactionManager</a></li></ol></li><li><a href=#datasourceselectorjava>DataSourceSelector.java</a></li><li><a href=#datasourcecontextaopjava>DataSourceContextAop.java</a></li><li><a href=#daojava>DAO.java</a></li></ol></li><li><a href=#spring-boot-interface無法使用aop>Spring Boot Interface無法使用AOP</a></li><li><a href=#缺點>缺點</a></li><li><a href=#參考資料>參考資料</a><ol><li><a href=#1-mybatis-读写分离原来这么简单一个小注解就够了>1. Mybatis: 读写分离原来这么简单，一个小注解就够了</a></li><li><a href=#2-jooq-jooq-整合-springboot-实现多数据源>2. JOOQ: jooq 整合 springboot 实现多数据源</a></li><li><a href=#3-抽象類abstractroutingdatasource切換多數據源應用-spring是如何支持多数据源的>3. 抽象類AbstractRoutingDataSource切換多數據源應用: Spring是如何支持多数据源的</a></li><li><a href=#4-spring-boot-interface使用aop-springboot基于interface的annotation在aop中如何生效>4. Spring Boot interface使用AOP: SpringBoot基于Interface的Annotation在AOP中如何生效</a></li></ol></li><li><a href=#補充資料>補充資料</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2023/09/multiple-datasource/><img src=/img/20230914-database-read-write-splitting/cover.jpg loading=lazy alt="Featured image of post 多數據源讀寫分離(Mybatis & JOOQ)"></a></div><div class=article-details><header class=article-category><a href=/categories/database/>Database</a>
+<a href=/categories/mybatis/>Mybatis</a>
+<a href=/categories/jooq/>JOOQ</a>
+<a href=/categories/java/>Java</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2023/09/multiple-datasource/>多數據源讀寫分離(Mybatis & JOOQ)</a></h2><h3 class=article-subtitle>Mybatis/Jooq多數據源切換、Interface實現AOP註解</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Sep 14, 2023</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>6 minute read</time></div></footer></div></header><section class=article-content><h2 id=介紹讀寫分離>介紹讀寫分離</h2><p>產品使用人數的增加，隨之不可避免的資料庫負擔增加<br>單一查詢變慢、頻繁查詢都有機率造成資料庫Container crash</p><p>資料庫的資源供不應求的情況下<br>可以將資料庫分為主庫（以下簡稱Master，專門寫入的資料庫，也有讀取，但是壓力不大）以及從庫（以下簡稱Slave，專門讀取的資料庫）<br>藉由將“讀”跟“寫”拆開，來分擔資料庫的負擔，降低只有單一資料庫crash的風險</p><p>例如：<br>原本只有一個資料庫A<br>現在將原本資料庫改成master A，專門做寫入以及快速查詢<br>新增三個Slave資料庫（B, C, D），將查詢較久或者頻繁查詢的SQL分散給三個Slave資料庫<br>如果其中一個Slave資料庫D死掉了，還有兩個Slave資料庫(B, C)可以頂替</p><h2 id=專案現況>專案現況</h2><ol><li>資料表已經使用了索引來滿足資料庫查詢</li><li>人力資源、經驗的不足，短期無法將資料庫運算的演算法在業務層實現</li><li>將資料庫版本升級風險高且不確定是否會顯著改善查詢效能</li></ol><p>所以我們計畫將讀取較耗資源、頻繁查詢的SQL<br>改成在專門讀取的資料庫搜尋並且多開幾個Slave Database Container降低讀取搞掛寫入資料庫的機率</p><p>另外Java本身也適合做多數據源的讀寫分離<br>Spring boot框架自帶AOP工具<br>使用註解達到對業務程式碼無侵入且使用方便的切換主從資料庫<br>只需實現自動連接主從庫的設定</p><h2 id=專案架構>專案架構</h2><p><img src=/img/20230914-database-read-write-splitting/datasource-structure.png loading=lazy alt=datasource-structure></p><h3 id=dynamicdatasourceenumjava>DynamicDataSourceEnum.java</h3><p>將Master&Slave寫成Enum，方便使用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.datasource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>enum</span> <span class=n>DynamicDataSourceEnum</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>MASTER</span><span class=o>(</span><span class=s>&#34;master&#34;</span><span class=o>),</span>
+</span></span><span class=line><span class=cl>  <span class=n>SLAVE</span><span class=o>(</span><span class=s>&#34;slave&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>String</span> <span class=n>dataSourceName</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>DynamicDataSourceEnum</span><span class=o>(</span><span class=n>String</span> <span class=n>dataSourceName</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=o>.</span><span class=na>dataSourceName</span> <span class=o>=</span> <span class=n>dataSourceName</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>String</span> <span class=nf>getDataSourceName</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>this</span><span class=o>.</span><span class=na>dataSourceName</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=datasourcecontextholderjava>DataSourceContextHolder.java</h3><p>ThreadLocal作為一個線程，紀錄Master/Slave資料源名稱</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.datasource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DataSourceContextHolder</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>ThreadLocal</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span> <span class=n>DYNAMIC_DATASOURCE_CONTEXT</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ThreadLocal</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>set</span><span class=o>(</span><span class=n>String</span> <span class=n>datasourceType</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>DYNAMIC_DATASOURCE_CONTEXT</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>datasourceType</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=kd>static</span> <span class=n>String</span> <span class=nf>get</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>DYNAMIC_DATASOURCE_CONTEXT</span><span class=o>.</span><span class=na>get</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>clear</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>DYNAMIC_DATASOURCE_CONTEXT</span><span class=o>.</span><span class=na>remove</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=dynamicdatasourcejava>DynamicDataSource.java</h3><p>繼承AbstractRoutingDataSource
+AbstractRoutingDataSource用途</p><ol><li>依據key查找對應資料源</li><li>設定default資料源(寫在下方DBConfiguration.java)</li><li>設定多數據源(寫在下方DBConfiguration.java)</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.datasource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DynamicDataSource</span> <span class=kd>extends</span> <span class=n>AbstractRoutingDataSource</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>  <span class=kd>protected</span> <span class=n>Object</span> <span class=nf>determineCurrentLookupKey</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>DataSourceContextHolder</span><span class=o>.</span><span class=na>get</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>對應父類AbstractRoutingDataSource裡的determineTargetDataSource<br>Override DynamicDataSource的determineCurrentLookupKey方法<br>藉由key來找到對應的數據源，最後交由Spring Boot管理資料庫連線(getConnection)</p><p>AbstractRoutingDataSource.java</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>protected</span> <span class=n>DataSource</span> <span class=nf>determineTargetDataSource</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>Assert</span><span class=o>.</span><span class=na>notNull</span><span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>resolvedDataSources</span><span class=o>,</span> <span class=s>&#34;DataSource router not initialized&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=n>Object</span> <span class=n>lookupKey</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>determineCurrentLookupKey</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=n>DataSource</span> <span class=n>dataSource</span> <span class=o>=</span> <span class=o>(</span><span class=n>DataSource</span><span class=o>)</span><span class=k>this</span><span class=o>.</span><span class=na>resolvedDataSources</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>lookupKey</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=o>(</span><span class=n>dataSource</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>lenientFallback</span> <span class=o>||</span> <span class=n>lookupKey</span> <span class=o>==</span> <span class=kc>null</span><span class=o>))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>dataSource</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>resolvedDefaultDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>   
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=o>(</span><span class=n>dataSource</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>throw</span> <span class=k>new</span> <span class=n>IllegalStateException</span><span class=o>(</span><span class=s>&#34;Cannot determine target DataSource for lookup key [&#34;</span> <span class=o>+</span> <span class=n>lookupKey</span> <span class=o>+</span> <span class=s>&#34;]&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=n>Connection</span> <span class=nf>getConnection</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=k>this</span><span class=o>.</span><span class=na>determineTargetDataSource</span><span class=o>().</span><span class=na>getConnection</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=n>Connection</span> <span class=nf>getConnection</span><span class=o>(</span><span class=n>String</span> <span class=n>username</span><span class=o>,</span> <span class=n>String</span> <span class=n>password</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=k>this</span><span class=o>.</span><span class=na>determineTargetDataSource</span><span class=o>().</span><span class=na>getConnection</span><span class=o>(</span><span class=n>username</span><span class=o>,</span> <span class=n>password</span><span class=o>);</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=datasourcebuilderjava>DataSourceBuilder.java</h3><p>初始化資料庫基本資訊(Alibaba的DruidDataSource寫DataSourceBuilder)</p><p>pom.xml</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>   <span class=nt>&lt;groupId&gt;</span>com.alibaba<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>   <span class=nt>&lt;artifactId&gt;</span>druid<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>DataSourceBuilder.java</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.datasource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>com.alibaba.druid.pool.DruidDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.slf4j.Logger</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.slf4j.LoggerFactory</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>javax.sql.DataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.sql.SQLException</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DataSourceBuilder</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>Logger</span> <span class=n>logger</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>          <span class=n>LoggerFactory</span><span class=o>.</span><span class=na>getLogger</span><span class=o>(</span><span class=n>DataSourceBuilder</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>mysqlDriverName</span> <span class=o>=</span> <span class=s>&#34;com.mysql.jdbc.Driver&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>mysqlUrlPrefix</span> <span class=o>=</span> <span class=s>&#34;jdbc:mysql://&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>mysqlUrlPostfix</span> <span class=o>=</span> <span class=s>&#34;?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>DataSource</span> <span class=nf>dataSourceBuilder</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>          <span class=n>String</span> <span class=n>host</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=kt>int</span> <span class=n>port</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=n>String</span> <span class=n>database</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=n>String</span> <span class=n>userName</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=n>String</span> <span class=n>password</span>
+</span></span><span class=line><span class=cl>  <span class=o>)</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>DruidDataSource</span> <span class=n>dataSource</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DruidDataSource</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>dataSource</span><span class=o>.</span><span class=na>setDriverClassName</span><span class=o>(</span><span class=n>mysqlDriverName</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>dataSource</span><span class=o>.</span><span class=na>setUrl</span><span class=o>(</span><span class=n>mysqlUrlPrefix</span> <span class=o>+</span> <span class=n>host</span> <span class=o>+</span> <span class=s>&#34;:&#34;</span> <span class=o>+</span> <span class=n>port</span> <span class=o>+</span> <span class=s>&#34;/&#34;</span> <span class=o>+</span> <span class=n>database</span> <span class=o>+</span> <span class=n>mysqlUrlPostfix</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>dataSource</span><span class=o>.</span><span class=na>setUsername</span><span class=o>(</span><span class=n>userName</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>dataSource</span><span class=o>.</span><span class=na>setPassword</span><span class=o>(</span><span class=n>password</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>dataSource</span><span class=o>.</span><span class=na>init</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=n>dataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>SQLException</span> <span class=n>var6</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>logger</span><span class=o>.</span><span class=na>error</span><span class=o>(</span><span class=s>&#34;init dataSource(&#34;</span> <span class=o>+</span> <span class=n>dataSource</span><span class=o>.</span><span class=na>getUrl</span><span class=o>()</span> <span class=o>+</span> <span class=s>&#34;) fail&#34;</span><span class=o>,</span> <span class=n>var6</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>      <span class=k>throw</span> <span class=n>var6</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=mysqlmasterdatasourcejava--mysqlslavedatasourcejava>MysqlMasterDataSource.java & MysqlSlaveDataSource.java</h3><p>將application.yaml檔案中的資料庫變數<br>透過上述DataSourceBuilder建立成MasterDataSource & SlaveDataSource</p><ol><li>MysqlMasterDataSource -> 寫入用資料源</li><li>MysqlSlaveDataSource -> 讀取用資料源</li></ol><p>以寫入用資料源為例<br>class加上@Component，宣告給spring boot管理class<br>透過@Value引入applicaiton.yaml檔案的資料庫連線所需變數<br>(讀取用資料源寫法同下)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.beans.factory.annotation.Value</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.context.annotation.Bean</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.stereotype.Component</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>javax.sql.DataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.sql.SQLException</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@Component</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MysqlMasterDataSource</span> <span class=kd>extends</span> <span class=n>DataSourceBuilder</span><span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Value</span><span class=o>(</span><span class=s>&#34;${mysql.host}&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>String</span> <span class=n>host</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=nd>@Value</span><span class=o>(</span><span class=s>&#34;${mysql.port}&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kt>int</span> <span class=n>port</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=nd>@Value</span><span class=o>(</span><span class=s>&#34;${mysql.database}&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>String</span> <span class=n>database</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=nd>@Value</span><span class=o>(</span><span class=s>&#34;${mysql.username}&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>String</span> <span class=n>userName</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Value</span><span class=o>(</span><span class=s>&#34;${mysql.password}&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>String</span> <span class=n>password</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Bean</span><span class=o>(</span><span class=s>&#34;dataSource&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>DataSource</span> <span class=nf>dataSource</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>this</span><span class=o>.</span><span class=na>dataSourceBuilder</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>host</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>port</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>database</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>userName</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=o>.</span><span class=na>password</span>
+</span></span><span class=line><span class=cl>    <span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=dbconfigurationjava>DBConfiguration.java</h3><h4 id=在dbconfigurationjava檔案中加入configuration以及mapperscan>在DBConfiguration.java檔案中，加入@Configuration以及@MapperScan</h4><ol><li>@Configuration告訴Spring boot，這個Class作為資料庫配置給Spring boot管理</li><li>@MapperScan是Mybatis的註解，所有在xml檔寫下mapper的檔案，都會依照掃描的規則讀取<ul><li>annotationClass: 讀取@Mapper註解的class</li><li>basePackages: 指定要掃描的檔案</li><li>sqlSessionFactoryRef: reference</li></ul></li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-JAVA data-lang=JAVA><span class=line><span class=cl><span class=nd>@Configuration</span>
+</span></span><span class=line><span class=cl><span class=nd>@MapperScan</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>annotationClass</span> <span class=o>=</span> <span class=n>Mapper</span><span class=o>.</span><span class=na>class</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>basePackages</span> <span class=o>=</span> <span class=s>&#34;dao.mysql&#34;</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>sqlSessionFactoryRef</span> <span class=o>=</span> <span class=s>&#34;SqlSessionFactoryRef&#34;</span><span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=透過建構函式把masterslave-datasource引入>透過建構函式把master/slave datasource引入</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>final</span> <span class=n>MysqlMasterDataSource</span> <span class=n>mysqlMasterDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>final</span> <span class=n>MysqlSlaveDataSource</span> <span class=n>mysqlSlaveDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=nf>DBConfiguration</span> <span class=o>(</span>
+</span></span><span class=line><span class=cl>          <span class=n>MysqlMasterDataSource</span> <span class=n>mysqlMasterDataSource</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=n>MysqlSlaveDataSource</span> <span class=n>mysqlSlaveDataSource</span>
+</span></span><span class=line><span class=cl>  <span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=o>.</span><span class=na>mysqlMasterDataSource</span> <span class=o>=</span> <span class=n>mysqlMasterDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=o>.</span><span class=na>mysqlSlaveDataSource</span> <span class=o>=</span> <span class=n>mysqlSlaveDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=建立dynamicdb>建立dynamicDb</h4><p>setDefaultTargetDataSource默認master datasource(@Transactional只使用default datasource)
+setTargetDataSources放入master & slave datasource</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>  <span class=nd>@Bean</span><span class=o>(</span><span class=s>&#34;dynamicDb&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>DynamicDataSource</span> <span class=nf>dynamicDb</span><span class=o>(</span>
+</span></span><span class=line><span class=cl>          <span class=nd>@Qualifier</span><span class=o>(</span><span class=s>&#34;dataSource&#34;</span><span class=o>)</span> <span class=n>DataSource</span> <span class=n>masterDataSource</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>          <span class=nd>@Qualifier</span><span class=o>(</span><span class=s>&#34;dataSourceSlave&#34;</span><span class=o>)</span> <span class=n>DataSource</span> <span class=n>slaveDataSource</span>
+</span></span><span class=line><span class=cl>  <span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>Map</span><span class=o>&lt;</span><span class=n>Object</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>targetDataSources</span> <span class=o>=</span> <span class=k>new</span> <span class=n>HashMap</span><span class=o>&lt;&gt;();</span>
+</span></span><span class=line><span class=cl>    <span class=n>targetDataSources</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>MASTER</span><span class=o>.</span><span class=na>getDataSourceName</span><span class=o>(),</span> <span class=n>masterDataSource</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>targetDataSources</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>SLAVE</span><span class=o>.</span><span class=na>getDataSourceName</span><span class=o>(),</span> <span class=n>slaveDataSource</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>DynamicDataSource</span> <span class=n>dynamicDataSource</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DynamicDataSource</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>dynamicDataSource</span><span class=o>.</span><span class=na>setDefaultTargetDataSource</span><span class=o>(</span><span class=n>masterDataSource</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>dynamicDataSource</span><span class=o>.</span><span class=na>setTargetDataSources</span><span class=o>(</span><span class=n>targetDataSources</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>   
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dynamicDataSource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=jooq-版本>JOOQ 版本</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Bean</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>DSLContext</span> <span class=nf>dslContext</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>DynamicDataSource</span> <span class=n>dynamicDataSource</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>dynamicDb</span><span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>mysqlMasterDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>(),</span> <span class=k>this</span><span class=o>.</span><span class=na>mysqlSlaveDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>    <span class=n>DefaultConfiguration</span> <span class=n>configuration</span> <span class=o>=</span> <span class=o>(</span><span class=n>DefaultConfiguration</span><span class=o>)</span> <span class=k>new</span> <span class=n>DefaultConfiguration</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>dynamicDataSource</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>SQLDialect</span><span class=o>.</span><span class=na>MYSQL</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>DSL</span><span class=o>.</span><span class=na>using</span><span class=o>(</span><span class=n>configuration</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=mybatis版本-建立sqlsessionfactory>Mybatis版本: 建立sqlSessionFactory</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>  <span class=nd>@Bean</span><span class=o>(</span><span class=n>SQL_SESSION_FACTORY</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>SqlSessionFactory</span> <span class=nf>sqlSessionFactory</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>Exception</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>SqlSessionFactoryBean</span> <span class=n>factory</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SqlSessionFactoryBean</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>DynamicDataSource</span> <span class=n>dynamicDataSource</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>dynamicDb</span><span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>mysqlMasterDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>(),</span> <span class=k>this</span><span class=o>.</span><span class=na>mysqlSlaveDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>    <span class=n>factory</span><span class=o>.</span><span class=na>setDataSource</span><span class=o>(</span><span class=n>dynamicDataSource</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// 這裡可以填入其他配置
+</span></span></span><span class=line><span class=cl><span class=c1></span>    
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>factory</span><span class=o>.</span><span class=na>getObject</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=mybatis版本-建立transactionmanager>Mybatis版本: 建立transactionManager</h4><p>SQL transaction只會使用上述dynamicDb中設置的default datasource(即masterDataSource)<br>不會切換成AOP註解的DataSource</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>  <span class=nd>@Bean</span><span class=o>(</span><span class=s>&#34;DataSourceTransactionManager&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>DataSourceTransactionManager</span> <span class=nf>transactionManager</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>SQLException</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>DynamicDataSource</span> <span class=n>dynamicDataSource</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>dynamicDb</span><span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>mysqlMasterDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>(),</span> <span class=k>this</span><span class=o>.</span><span class=na>mysqlSlaveDataSource</span><span class=o>.</span><span class=na>dataSource</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>    <span class=n>DataSourceTransactionManager</span> <span class=n>transactionManager</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>            <span class=k>new</span> <span class=n>DataSourceTransactionManager</span><span class=o>(</span><span class=n>dynamicDataSource</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>transactionManager</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=datasourceselectorjava>DataSourceSelector.java</h3><p>創建一個註解，默認使用MasterDataSource</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.datasource</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.lang.annotation.*</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@Retention</span><span class=o>(</span><span class=n>RetentionPolicy</span><span class=o>.</span><span class=na>RUNTIME</span><span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@Target</span><span class=o>(</span><span class=n>ElementType</span><span class=o>.</span><span class=na>METHOD</span><span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@Documented</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=nd>@interface</span> <span class=n>DataSourceSelector</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>DynamicDataSourceEnum</span> <span class=nf>value</span><span class=o>()</span> <span class=k>default</span> <span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>MASTER</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=datasourcecontextaopjava>DataSourceContextAop.java</h3><p>建立AOP（Aspect-oriented Programming）<br>@Aspect => 讓Spring boot認定為AOP<br>@Order(value = 1) 將AOP層級設定為最高<br>@Around => 對下@DataSourceSelector註解的方法做數據源切換<br>DataSourceContextHolder.set() => 設定數據源<br>pjp.proceed() => 執行method<br>DataSourceContextHolder.clear() => 清除數據源</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.aspect</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>config.datasource.DataSourceContextHolder</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>config.datasource.DataSourceSelector</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aspectj.lang.JoinPoint</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aspectj.lang.ProceedingJoinPoint</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aspectj.lang.annotation.Around</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aspectj.lang.annotation.Aspect</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aspectj.lang.reflect.MethodSignature</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.core.annotation.Order</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.stereotype.Component</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.lang.reflect.Method</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@Aspect</span>
+</span></span><span class=line><span class=cl><span class=nd>@Order</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=mi>1</span><span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@Component</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DataSourceContextAop</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Around</span><span class=o>(</span><span class=s>&#34;@annotation(config.datasource.DataSourceSelector)&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Object</span> <span class=nf>setDynamicDataSource</span><span class=o>(</span><span class=n>ProceedingJoinPoint</span> <span class=n>pjp</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Throwable</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>Method</span> <span class=n>method</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>getMethod</span><span class=o>(</span><span class=n>pjp</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>DataSourceSelector</span> <span class=n>dataSourceImport</span> <span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>getAnnotation</span><span class=o>(</span><span class=n>DataSourceSelector</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>DataSourceContextHolder</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>dataSourceImport</span><span class=o>.</span><span class=na>value</span><span class=o>().</span><span class=na>getDataSourceName</span><span class=o>());</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=n>pjp</span><span class=o>.</span><span class=na>proceed</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span> <span class=k>finally</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>DataSourceContextHolder</span><span class=o>.</span><span class=na>clear</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=n>Method</span> <span class=nf>getMethod</span><span class=o>(</span><span class=n>JoinPoint</span> <span class=n>pjp</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>MethodSignature</span> <span class=n>signature</span> <span class=o>=</span> <span class=o>(</span><span class=n>MethodSignature</span><span class=o>)</span><span class=n>pjp</span><span class=o>.</span><span class=na>getSignature</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>signature</span><span class=o>.</span><span class=na>getMethod</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>}</span> 
+</span></span></code></pre></td></tr></table></div></div><h3 id=daojava>DAO.java</h3><p>最後在DAO的SQL上加入AOP註解</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>dao</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>config.datasource.DataSourceSelector</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>config.datasource.DynamicDataSourceEnum</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.jooq.Condition</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.jooq.DSLContext</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.beans.factory.annotation.Autowired</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.stereotype.Repository</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@Repository</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DAO</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=nd>@Autowired</span> <span class=n>DSLContext</span> <span class=n>dslContext</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// 指定 Slave DataSource
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nd>@DataSourceSelector</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>SLAVE</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Slave</span> <span class=nf>getSlave</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dslContext</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>selectFrom</span><span class=o>(</span><span class=s>&#34;slave_table&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fetchInto</span><span class=o>(</span><span class=n>Slave</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// 指定 Master DataSource
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nd>@DataSourceSelector</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>MASTER</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Master</span> <span class=nf>getMaster</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dslContext</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>selectFrom</span><span class=o>(</span><span class=s>&#34;master_table&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fetchInto</span><span class=o>(</span><span class=n>Master</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// 未指定，默認使用 Master DataSource
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=kd>public</span> <span class=n>Default</span> <span class=nf>getDefault</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dslContext</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>selectFrom</span><span class=o>(</span><span class=s>&#34;default_table&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fetchInto</span><span class=o>(</span><span class=n>Default</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// Transaction，默認使用 MasterDataSource
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nd>@Transactional</span><span class=o>(</span><span class=n>rollbackFor</span> <span class=o>=</span> <span class=n>Exception</span><span class=o>.</span><span class=na>class</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Transaction</span> <span class=nf>getTransaction</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>dslContext</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>selectFrom</span><span class=o>(</span><span class=s>&#34;transaction_table&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>        <span class=o>.</span><span class=na>fetchInto</span><span class=o>(</span><span class=n>Transaction</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=spring-boot-interface無法使用aop>Spring Boot Interface無法使用AOP</h2><p>專案的SQL寫在xml，mapper到DAO的Interface<br>然而Sping Boot AOP的註解在Interface不起作用</p><p>DAO Interface</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Repository</span>
+</span></span><span class=line><span class=cl><span class=nd>@Mapper</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>interface</span> <span class=nc>SomethingDAO</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@DataSourceSelector</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=n>DynamicDataSourceEnum</span><span class=o>.</span><span class=na>SLAVE</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=n>Something</span> <span class=nf>getSomething</span><span class=o>();</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>SQL xml</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; ?&gt;</span>
+</span></span><span class=line><span class=cl><span class=cp>&lt;!DOCTYPE mapper PUBLIC &#34;-//mybatis.org//DTD Mapper 3.0//EN&#34; &#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34; &gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;mapper</span> <span class=na>namespace=</span><span class=s>&#34;dao.mysql.SomethingDAO&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;select</span> <span class=na>id=</span><span class=s>&#34;getSomething&#34;</span> <span class=na>resultType=</span><span class=s>&#34;Something&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>        SELECT *
+</span></span><span class=line><span class=cl>        FROM something_table
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/select&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/mapper&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>解法:
+透過另一種全文搜尋的方式匹配AOP及interface中的method<br>getAdvice會在getPointcut為true的時候被觸發</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>config.aspect</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>config.datasource.DataSourceSelector</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.aopalliance.aop.Advice</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.aop.Pointcut</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.aop.support.StaticMethodMatcherPointcut</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.core.annotation.AnnotatedElementUtils</span><span class=o>;</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>org.springframework.stereotype.Component</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.lang.reflect.Method</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@Component</span>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DataSourceSelectorAdvisor</span> <span class=kd>extends</span> <span class=n>AbstractBeanFactoryPointcutAdvisor</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>final</span> <span class=n>StaticMethodMatcherPointcut</span> <span class=n>pointcut</span> <span class=o>=</span> <span class=k>new</span> <span class=n>StaticMethodMatcherPointcut</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>matches</span><span class=o>(</span><span class=n>Method</span> <span class=n>method</span><span class=o>,</span> <span class=n>Class</span><span class=o>&lt;?&gt;</span> <span class=n>targetClass</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// 直接使用spring工具包，来获取method上的注解（会找父类上的注解）
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=k>return</span> <span class=n>AnnotatedElementUtils</span><span class=o>.</span><span class=na>hasAnnotation</span><span class=o>(</span><span class=n>method</span><span class=o>,</span> <span class=n>DataSourceSelector</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=o>};</span>
+</span></span><span class=line><span class=cl>  <span class=kd>private</span> <span class=kd>final</span> <span class=n>Advice</span> <span class=n>advice</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DataSourceSelectorInterceptor</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Pointcut</span> <span class=nf>getPointcut</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>pointcut</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>  <span class=kd>public</span> <span class=n>Advice</span> <span class=nf>getAdvice</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>advice</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=缺點>缺點</h2><p>多個微服務需要重寫多次讀寫分離的配置<br>每次都得寫一次Enum, AOP, 註解, 資料庫配置等多個檔案<br>個人覺得小專案較適合維護</p><h2 id=參考資料>參考資料</h2><h3 id=1-mybatis-读写分离原来这么简单一个小注解就够了>1. Mybatis: 读写分离原来这么简单，一个小注解就够了</h3><p><a class=link href=https://www.51cto.com/article/650044.html target=_blank rel=noopener>https://www.51cto.com/article/650044.html</a></p><h3 id=2-jooq-jooq-整合-springboot-实现多数据源>2. JOOQ: jooq 整合 springboot 实现多数据源</h3><p><a class=link href=https://blog.csdn.net/yuanchengfu0910/article/details/130927354 target=_blank rel=noopener>https://blog.csdn.net/yuanchengfu0910/article/details/130927354</a></p><h3 id=3-抽象類abstractroutingdatasource切換多數據源應用-spring是如何支持多数据源的>3. 抽象類AbstractRoutingDataSource切換多數據源應用: Spring是如何支持多数据源的</h3><p><a class=link href=https://juejin.cn/post/7104858276776378381 target=_blank rel=noopener>https://juejin.cn/post/7104858276776378381</a></p><h3 id=4-spring-boot-interface使用aop-springboot基于interface的annotation在aop中如何生效>4. Spring Boot interface使用AOP: SpringBoot基于Interface的Annotation在AOP中如何生效</h3><p><a class=link href=https://davyjones2010.github.io/2022-06-02-spring-annotation-on-interface/ target=_blank rel=noopener>https://davyjones2010.github.io/2022-06-02-spring-annotation-on-interface/</a></p><h2 id=補充資料>補充資料</h2><p>mybatis團隊有提供多數據源的套件
+<a class=link href=https://gitee.com/baomidou/dynamic-datasource-spring-boot-starter target=_blank rel=noopener>https://gitee.com/baomidou/dynamic-datasource-spring-boot-starter</a></p><p>公司的專案將SQL寫在xml，mapper到interface故不適用，如果是寫在class類的專案，可以考慮看看</p></section><footer class=article-footer></footer></article><footer class=site-footer><section class=copyright>&copy;
+2020 -
+2023 Joey 軟體技術網站</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.16.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
