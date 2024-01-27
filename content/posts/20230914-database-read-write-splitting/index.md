@@ -5,10 +5,7 @@ description: Mybatis/Jooq多數據源切換、Interface實現AOP註解
 slug: multiple-datasource
 image: /img/20230914-database-read-write-splitting/cover.jpg
 categories:
-- Database
-- Mybatis
-- JOOQ
-- Java
+- 資料庫
 ---
 
 ## 介紹讀寫分離
