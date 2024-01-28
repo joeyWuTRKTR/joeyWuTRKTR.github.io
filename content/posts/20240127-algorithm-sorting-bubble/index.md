@@ -3,11 +3,13 @@ title: "泡沫排序法"
 description: 基本排序-Bubble Sort
 date: 2024-01-27T16:42:33+08:00
 slug: bubble-sorting
-image: /img/20240127-algorithm-sorting/cover.jpg
+image: /img/sorting-cover/bubble-sort.jpg
 categories:
 - 演算法
 ---
 # Bubble Sort(Sinking Sort)
+兩兩比較，把最大的數字往數組的最後排
+
 ## 1. 兩兩比較，把最大的數字往數組的最後排
 origin: [30, 12, 45, 15, 3]  
 first 45: [30, 12, 15, 3, 45]  
@@ -16,9 +18,9 @@ third 15: [12, 3, 15, 30, 45]
 forth 12: [3, 12, 15, 30, 45]  
 fifth 3: [3, 12, 15, 30, 45]  
 
-{{<img src="/img/20240127-algorithm-sorting/bubble-sort-origin.png" width="200px" height="50%">}}
-{{<img src="/img/20240127-algorithm-sorting/bubble-sort-origin1.png" width="200px" height="50%">}}
-{{<img src="/img/20240127-algorithm-sorting/bubble-sort-origin-final.png" width="200px" height="50%">}}
+{{<img src="/img/20240127-algorithm-sorting-bubble/bubble-sort-origin.png" width="200px" height="50%">}}
+{{<img src="/img/20240127-algorithm-sorting-bubble/bubble-sort-origin1.png" width="200px" height="50%">}}
+{{<img src="/img/20240127-algorithm-sorting-bubble/bubble-sort-origin-final.png" width="200px" height="50%">}}
 
 ## 2. 只要有一輪沒有交換，代表已經排序完成
 ### 定義noSwap做紀錄
