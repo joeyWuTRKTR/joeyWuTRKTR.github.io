@@ -9,7 +9,7 @@ categories:
 ---
 
 # Array flatten有三種方式：
-## 1. 使用Array內建方法flat()，括弧內可加想要展開的“層數”
+## 使用Array內建方法flat()，括弧內可加想要展開的“層數”
 ```javaScript
 
 // 展開一層
@@ -23,7 +23,7 @@ categories:
 
 ```
 
-## 2. 搭配reducer&concate展開
+## 搭配reducer&concate展開
 ```javaScript
 function flattenArray(arr) {
   return arr.reduce((acc, val) => {
@@ -40,7 +40,7 @@ flattenArray([1, 2, [3, 4, [5, 6]], 7, 8]);
 
 ```
 
-## 3. spread operator(只有Array內只有一層的情況)
+## spread operator(只有Array內只有一層的情況)
 ```javaScript
  [].concat(...[1, 2, [3, 4, 5, 6], 7, 8])
 ```
