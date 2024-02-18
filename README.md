@@ -1,7 +1,8 @@
 #Hugo
 
 ## Create a post in /content/posts
-(in directory Hugo-Blog) hugo new posts/20240127-algorithm-sorting/basic-sorting.md
+(in directory Hugo-Blog) 
+hugo new posts/date-file-name/file-name.md
 
 ## Run server
 hugo server -D
