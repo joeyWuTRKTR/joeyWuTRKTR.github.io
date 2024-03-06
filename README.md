@@ -2,7 +2,7 @@
 
 ## Create a post in /content/posts
 (in directory Hugo-Blog) 
-hugo new posts/date-file-name/file-name.md
+hugo new posts/date-file-name/index.md
 
 ## Run server
 hugo server -D
