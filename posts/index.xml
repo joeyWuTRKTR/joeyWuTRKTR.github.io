@@ -1,4 +1,136 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey 軟體技術網站</title><link>https://example.com/posts/</link><description>Recent content in Posts on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 18 Feb 2024 13:19:47 +0800</lastBuildDate><atom:link href="https://example.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Array From</title><link>https://example.com/2024/02/array-from/</link><pubDate>Sun, 18 Feb 2024 13:19:47 +0800</pubDate><guid>https://example.com/2024/02/array-from/</guid><description>&lt;img src="https://example.com/img/javaScript-cover/array-from.jpg" alt="Featured image of post Array From" />&lt;h2 id="from-method解決什麼問題">from method解決什麼問題？&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey 軟體技術網站</title><link>https://example.com/posts/</link><description>Recent content in Posts on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 06 Mar 2024 07:42:42 +0800</lastBuildDate><atom:link href="https://example.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>chatGPT + Mermaid.js 一鍵生成流程圖</title><link>https://example.com/2024/03/chatgpt--mermaid.js-%E4%B8%80%E9%8D%B5%E7%94%9F%E6%88%90%E6%B5%81%E7%A8%8B%E5%9C%96/</link><pubDate>Wed, 06 Mar 2024 07:42:42 +0800</pubDate><guid>https://example.com/2024/03/chatgpt--mermaid.js-%E4%B8%80%E9%8D%B5%E7%94%9F%E6%88%90%E6%B5%81%E7%A8%8B%E5%9C%96/</guid><description>&lt;h2 id="pmuiux和開發間的需求溝通障礙造成開發溝通成本過高">PM、UI/UX和開發間的需求溝通障礙，造成開發溝通成本過高&lt;/h2>
+&lt;p>近期遇到當開發迭代速度加快且開發人力臨時被抽走，產品經理撰寫的產品需求文件 (PRD) 過於複雜。這導致 UI/UX 團隊難以理解，從而畫出錯誤的使用者介面，或者在開發過程中發現 PRD 中的流程邏輯存在問題。在軟體產品的迭代過程中，使用流程圖作為構思 PRD、團隊溝通和驗收的工具，可以顯著減少事後溝通和修改成本。因此，我們需要一個簡單易懂的流程圖，以幫助我們更好地理解產品需求、溝通和迭代。在這種情況下，ChatGPT 與 Mermaid.js 可以提供一鍵生成流程圖的解決方案。&lt;/p>
+&lt;h2 id="chatgpt-加上-mermaidjs一鍵生成流程圖">ChatGPT 加上 Mermaid.js，一鍵生成流程圖&lt;/h2>
+&lt;img src="https://example.com/img/20240306-tool-mermaidJs/chatGPT1.png" style="width: 50%; height: ;">
+&lt;h3 id="chatgpt生成mermaidjs格式的流程圖">ChatGPT生成Mermaid.js格式的流程圖&lt;/h3>
+&lt;p>將生成的mermaid格式貼上到線上mermaid editor中，即可生成流程圖。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph TD;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> A(6點起床) --&amp;gt; B(刷牙洗臉);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> B --&amp;gt; C(做早餐/泡咖啡);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> C --&amp;gt; D(是否出門運動);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |是| E(運動);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |否| F(學習演算法);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> E --&amp;gt; G(9點上班);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; G;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>graph 代表流程圖的類型&lt;br>
+TD 流程圖是由上往下指向&lt;br>
+A(6點起床) &amp;ndash;&amp;gt; B(刷牙洗臉) 代表流程圖的節點由A節點指向B節點。 &lt;br>
+() 是帶有圓角的方框，是一個操作&lt;br>
+{} 是菱形，是一個判斷&lt;/p>
+&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor1.png" style="width: 30%; height: ;">
+&lt;p>正確的流程圖要把chatGPT生成的mermaid格式的“D(是否出門運動)”改為&amp;quot;D{是否出門運動}&amp;quot;，作為一個判斷的節點。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph TD;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> A(6點起床) --&amp;gt; B(刷牙洗臉);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> B --&amp;gt; C(做早餐/泡咖啡);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> C --&amp;gt; D{是否出門運動};
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |是| E(運動);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |否| F(學習演算法);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> E --&amp;gt; G(9點上班);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; G;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor2.png" style="width: 30%; height: ;">
+&lt;h3 id="加上subgraph將流程圖分成多個部分更加清晰">加上subgraph，將流程圖分成多個部分，更加清晰&lt;/h3>
+&lt;p>加上subgraph可以將流程圖分成兩多個子圖。&lt;br>
+&lt;img src="https://example.com/img/20240306-tool-mermaidJs/chatGPT2.png" style="width: 50%; height: ;">
+&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph TD;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> A(6點起床) --&amp;gt; B(刷牙洗臉);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> subgraph 固定行程
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> B --&amp;gt; C(做早餐/泡咖啡);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> end
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D(是否出門運動) --&amp;gt; |是| E(運動);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |否| F(學習演算法);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> E --&amp;gt; G(9點上班);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; G;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor3.png" style="width: 50%; height: ;">
+&lt;p>修改一下自動生成的流程圖要把“D(是否出門運動)”改為&amp;quot;D{是否出門運動}&amp;quot;，作為一個判斷的節點。&lt;br>
+將子圖的C指向主圖的D，&amp;ldquo;C &amp;ndash;&amp;gt; D&amp;rdquo;&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph TD;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> A(6點起床) --&amp;gt; B(刷牙洗臉);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> subgraph 固定行程
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> B --&amp;gt; C(做早餐/泡咖啡);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> end
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> C --&amp;gt; D
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D{是否出門運動} --&amp;gt; |是| E(運動);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D --&amp;gt; |否| F(學習演算法);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> E --&amp;gt; G(9點上班);
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; G;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor4.png" style="width: 30%; height: ;">
+&lt;h2 id="結論">結論&lt;/h2>
+&lt;p>使用流程圖溝通的好處在於，它可以幫助我們更好地理解產品需求、溝通和迭代。&lt;br>
+大大減少溝通成本及不必要的重複工作量。&lt;/p>
+&lt;img src="https://example.com/img/20240306-tool-mermaidJs/chatGPT3.png" style="width: ; height: ;">
+&lt;p>如果將開頭長長的文字用chatGPT加Mermaid.js生成流程圖，會發現總結起來清晰又快速。&lt;/p>
+&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor5.png" style="width: ; height: ;">
+&lt;h2 id="參考">參考&lt;/h2>
+&lt;p>認識 docsify 文件好幫手 mermaid，簡單畫出 Flowcharts:&lt;br>
+&lt;a class="link" href="https://medium.com/unalai/%E8%AA%8D%E8%AD%98-docsify-%E6%96%87%E4%BB%B6%E5%A5%BD%E5%B9%AB%E6%89%8B-mermaid-%E7%B0%A1%E5%96%AE%E7%95%AB%E5%87%BA-flowcharts-3b1ac30b1ee1" target="_blank" rel="noopener"
+>https://medium.com/unalai/%E8%AA%8D%E8%AD%98-docsify-%E6%96%87%E4%BB%B6%E5%A5%BD%E5%B9%AB%E6%89%8B-mermaid-%E7%B0%A1%E5%96%AE%E7%95%AB%E5%87%BA-flowcharts-3b1ac30b1ee1&lt;/a>&lt;/p>
+&lt;p>線上Mermaid Editor推薦:&lt;/p>
+&lt;ol>
+&lt;li>&lt;a class="link" href="https://mermaid.live/" target="_blank" rel="noopener"
+>https://mermaid.live/&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://workflow.jace.pro/" target="_blank" rel="noopener"
+>https://workflow.jace.pro/&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>Array From</title><link>https://example.com/2024/02/array-from/</link><pubDate>Sun, 18 Feb 2024 13:19:47 +0800</pubDate><guid>https://example.com/2024/02/array-from/</guid><description>&lt;img src="https://example.com/img/javaScript-cover/array-from.jpg" alt="Featured image of post Array From" />&lt;h2 id="from-method解決什麼問題">from method解決什麼問題？&lt;/h2>
 &lt;h3 id="arraylike--可迭代物件symboliterator-轉換成陣列">ArrayLike &amp;amp; 可迭代物件Symbol.iterator 轉換成陣列&lt;/h3>
 &lt;p>同時map成想要的資料格式(optional)
 相等 Array.from().map()&lt;/p>
