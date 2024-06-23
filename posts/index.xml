@@ -1,4 +1,280 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey 軟體技術網站</title><link>https://example.com/posts/</link><description>Recent content in Posts on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 06 Mar 2024 07:42:42 +0800</lastBuildDate><atom:link href="https://example.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>chatGPT + Mermaid.js 一鍵生成流程圖</title><link>https://example.com/2024/03/tool-mermaidjs/</link><pubDate>Wed, 06 Mar 2024 07:42:42 +0800</pubDate><guid>https://example.com/2024/03/tool-mermaidjs/</guid><description>&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor5.png" alt="Featured image of post chatGPT + Mermaid.js 一鍵生成流程圖" />&lt;h2 id="pmuiux和開發間的需求溝通障礙造成開發溝通成本過高">PM、UI/UX和開發間的需求溝通障礙，造成開發溝通成本過高&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Joey 軟體技術網站</title><link>https://example.com/posts/</link><description>Recent content in Posts on Joey 軟體技術網站</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 23 Jun 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Node-redis &amp; Redlock</title><link>https://example.com/2024/06/redis-lock-introduction/</link><pubDate>Sun, 23 Jun 2024 00:00:00 +0000</pubDate><guid>https://example.com/2024/06/redis-lock-introduction/</guid><description>&lt;img src="https://example.com/img/20240619-redis-lock-introduction/redis-lock.png" alt="Featured image of post Node-redis &amp; Redlock" />&lt;h1 id="redis-lock">Redis lock&lt;/h1>
+&lt;ol>
+&lt;li>性能高（寫在memory）、 最終一致性&lt;/li>
+&lt;li>預防死鎖（Deadlock free），Lock在ttl後自動釋放，避免握有lock的client當機，lock不能被釋放&lt;/li>
+&lt;li>分布式鎖，避免單點故障（Fault Tolerance），redis跨cluster部署&lt;/li>
+&lt;li>互斥（mutual exclusive），同一時間只有一個client可以取得鎖&lt;/li>
+&lt;/ol>
+&lt;h2 id="demo">Demo&lt;/h2>
+&lt;h3 id="流程">流程&lt;/h3>
+&lt;img src="https://example.com/img/20240619-redis-lock-introduction/redis-lock.png" style="width: 100%; height: ;">
+&lt;h3 id="redlock--ioredis">redlock &amp;amp; ioredis&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// redis.js
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">Redis&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;ioredis&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">Redlock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;redlock&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">}&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;../config&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redis&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Redis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sb">`redis://:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">password&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">@&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">host&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">port&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 可以帶入多個clients
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kr">const&lt;/span> &lt;span class="nx">redisClients&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redlock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Redlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisClients&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ttl&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">options&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">redlock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">acquireWithOptions&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ttl&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">options&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">await&lt;/span> &lt;span class="nx">lock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">unlock&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">expiry&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;EX&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">expiry&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">module&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">exports&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>redisLock 放在程式碼的入口&lt;br>
+輪流取得資源(redis lock)&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// main.js
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">let&lt;/span> &lt;span class="nx">redisLock&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">result&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redisLockResource&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;service:redisLockResource&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">expiredKey&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;service:expired&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">try&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Redlock 的 ttl 單位是毫秒，設定鎖住時間為 300 秒
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">redisLock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisLockResource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">300&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">retryCount&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// -1 unlimited retries, 0 for no retry
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">expired&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">expiredKey&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span>&lt;span class="nx">expired&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 查詢多張表並且做一些計算
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">doHearvyQueryAndInsert&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 第一個人insert資料後用key做個記號，限制 5 分鐘內不重複取資料
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// ioredis 的 ttl 單位是秒，設定鎖住時間為 300 秒
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">expiredKey&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nb">Date&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="nx">getTime&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="mi">300&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span> &lt;span class="k">catch&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">error&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;catch Error:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">error&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span> &lt;span class="k">finally&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">redisLock&lt;/span> &lt;span class="o">!==&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 查詢insert後的資料
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">queryInsertedData&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 把redisLock釋放掉
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisLock&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="c1">// release lock every time after user querying
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="redis">Redis&lt;/h2>
+&lt;h3 id="單個redis-node">單個Redis Node&lt;/h3>
+&lt;h4 id="用setnx--px-上鎖搭配lua腳本取鎖釋放鎖">用SETNX + PX 上鎖，搭配lua腳本取鎖、釋放鎖&lt;/h4>
+&lt;p>SETNX: SET if Not exists
+PX: expiration (milliseconds)
+lua腳本：若同一個人在ttl內取得已經上鎖的鎖，則可以把鎖釋放&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 鎖 60 秒&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; SET lock_for_resource_1 uuid1 NX PX &lt;span class="m">60000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 如果是同一個client，可以取得鎖&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; EVAL &lt;span class="s2">&amp;#34;if redis.call(\&amp;#34;get\&amp;#34;, KEYS[1]) == ARGV[1] then return redis.call(\&amp;#34;del\&amp;#34;, KEYS[1]) else return 0 end&amp;#34;&lt;/span> &lt;span class="m">1&lt;/span> lock_for_resource_1 uuid1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>integer&lt;span class="o">)&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 如果是不同的client，無法取得鎖&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; EVAL &lt;span class="s2">&amp;#34;if redis.call(\&amp;#34;get\&amp;#34;, KEYS[1]) == ARGV[1] then return redis.call(\&amp;#34;del\&amp;#34;, KEYS[1]) else return 0 end&amp;#34;&lt;/span> &lt;span class="m">1&lt;/span> lock_for_resource_1 uuid2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>integer&lt;span class="o">)&lt;/span> &lt;span class="m">0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="多個redis-node">多個Redis Node&lt;/h3>
+&lt;h4 id="redlock演算法">Redlock演算法&lt;/h4>
+&lt;p>Redis 實例數量設定 N &amp;gt;= 3 的奇數&lt;br>
+如果同一個資源被過半數以上的 Redis Nodes 取得，
+且時間小於ttl - 系統允許誤差時間， 則該資源可以被鎖住&lt;/p>
+&lt;p>節點需要在5-50ms取得鎖，否則timeout（防止節點死亡，資源被卡住）&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// redlock.js(node-redis)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// execute redis resource/value lock
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">request&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kd">function&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">_executeScript&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;lockScript&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">resource&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">length&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">...&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ttl&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// loop all redis nodes
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">servers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">forEach&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">function&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">request&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// if locked over half redis nodes and within ttl, lock the resouce
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kr">const&lt;/span> &lt;span class="nx">lock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Lock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">self&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">start&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">ttl&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">drift&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">attempts&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">retryCount&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">attempts&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">votes&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="nx">quorum&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">lock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">expiration&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="nb">Date&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">now&lt;/span>&lt;span class="p">())&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">resolve&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="tools">Tools&lt;/h2>
+&lt;ol>
+&lt;li>node version: v16.19.1&lt;/li>
+&lt;li>redlock &amp;ldquo;^4.2.0&amp;rdquo;(目前最新版是 5.0.0-beta.2，目前仍有bug，建議降版使用 4.2.0 版本)&lt;/li>
+&lt;li>ioredis: &amp;ldquo;^5.4.1&amp;rdquo;&lt;/li>
+&lt;/ol>
+&lt;h2 id="reference">Reference&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>面试官：说一下红锁RedLock的实现原理？
+&lt;a class="link" href="https://www.cnblogs.com/vipstone/p/18036976" target="_blank" rel="noopener"
+>https://www.cnblogs.com/vipstone/p/18036976&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Redis Lock (Redlock) 分散式 lock 原理分析與實作:
+&lt;a class="link" href="https://yuanchieh.page/posts/2020/2020-01-14_redis-lock-redlock-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90%E8%88%87%E5%AF%A6%E4%BD%9C/" target="_blank" rel="noopener"
+>https://yuanchieh.page/posts/2020/2020-01-14_redis-lock-redlock-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90%E8%88%87%E5%AF%A6%E4%BD%9C/&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Distributed Locks with Redis:
+&lt;a class="link" href="https://redis.io/docs/latest/develop/use/patterns/distributed-locks/" target="_blank" rel="noopener"
+>https://redis.io/docs/latest/develop/use/patterns/distributed-locks/&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>node-redlock:
+&lt;a class="link" href="https://github.com/mike-marcacci/node-redlock" target="_blank" rel="noopener"
+>https://github.com/mike-marcacci/node-redlock&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Achieving Distributed Locking in Node.js with Redis and Redlock:
+&lt;a class="link" href="https://medium.com/@ayushnandanwar003/achieving-distributed-locking-in-node-js-with-redis-and-redlock-0574f5ac333d" target="_blank" rel="noopener"
+>https://medium.com/@ayushnandanwar003/achieving-distributed-locking-in-node-js-with-redis-and-redlock-0574f5ac333d&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>chatGPT + Mermaid.js 一鍵生成流程圖</title><link>https://example.com/2024/03/tool-mermaidjs/</link><pubDate>Wed, 06 Mar 2024 07:42:42 +0800</pubDate><guid>https://example.com/2024/03/tool-mermaidjs/</guid><description>&lt;img src="https://example.com/img/20240306-tool-mermaidJs/mermaidEditor5.png" alt="Featured image of post chatGPT + Mermaid.js 一鍵生成流程圖" />&lt;h2 id="pmuiux和開發間的需求溝通障礙造成開發溝通成本過高">PM、UI/UX和開發間的需求溝通障礙，造成開發溝通成本過高&lt;/h2>
 &lt;p>近期遇到當開發迭代速度加快且開發人力臨時被抽走，產品經理撰寫的產品需求文件 (PRD) 過於複雜。這導致 UI/UX 團隊難以理解，從而畫出錯誤的使用者介面，或者在開發過程中發現 PRD 中的流程邏輯存在問題。在軟體產品的迭代過程中，使用流程圖作為構思 PRD、團隊溝通和驗收的工具，可以顯著減少事後溝通和修改成本。因此，我們需要一個簡單易懂的流程圖，以幫助我們更好地理解產品需求、溝通和迭代。在這種情況下，ChatGPT 與 Mermaid.js 可以提供一鍵生成流程圖的解決方案。&lt;/p>
 &lt;h2 id="chatgpt-加上-mermaidjs一鍵生成流程圖">ChatGPT 加上 Mermaid.js，一鍵生成流程圖&lt;/h2>
 &lt;img src="https://example.com/img/20240306-tool-mermaidJs/chatGPT1.png" style="width: 50%; height: ;">
@@ -2346,272 +2622,4 @@ alt="geo-bboxes.png"
 &lt;h3 id="文章">文章：&lt;/h3>
 &lt;p>&lt;strong>1. 空间索引之GeoHash&lt;/strong>&lt;br>
 &lt;a class="link" href="https://www.biaodianfu.com/geohash.html" target="_blank" rel="noopener"
->https://www.biaodianfu.com/geohash.html&lt;/a>&lt;/p></description></item><item><title/><link>https://example.com/1/01/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://example.com/1/01/</guid><description>&lt;h1 id="redis-lock">Redis lock&lt;/h1>
-&lt;ol>
-&lt;li>性能高（寫在memory）、 最終一致性&lt;/li>
-&lt;li>預防死鎖（Deadlock free），Lock在ttl後自動釋放，避免握有lock的client當機，lock不能被釋放&lt;/li>
-&lt;li>分布式鎖，避免單點故障（Fault Tolerance），redis跨cluster部署&lt;/li>
-&lt;li>互斥（mutual exclusive），同一時間只有一個client可以取得鎖&lt;/li>
-&lt;/ol>
-&lt;h2 id="demo">Demo&lt;/h2>
-&lt;hr>
-&lt;p>流程
-&lt;img src="https://example.com/img/20240619-redis-lock-introduction/redis-lock.png" style="width: 30%; height: ;">
-&lt;/p>
-&lt;p>redlock &amp;amp; ioredis&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// redis.js
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">Redis&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;ioredis&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">Redlock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;redlock&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">}&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">require&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;../config&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redis&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Redis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sb">`redis://:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">password&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">@&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">host&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nx">config&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">port&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 可以帶入多個clients
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kr">const&lt;/span> &lt;span class="nx">redisClients&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">redis&lt;/span>&lt;span class="p">];&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redlock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Redlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisClients&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ttl&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">options&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">redlock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">acquireWithOptions&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ttl&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">options&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">await&lt;/span> &lt;span class="nx">lock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">unlock&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">expiry&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;EX&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">expiry&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">async&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">redis&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">key&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">module&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">exports&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>redisLock 放在程式碼的入口&lt;br>
-輪流取得資源(redis lock)&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// main.js
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">let&lt;/span> &lt;span class="nx">redisLock&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">result&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">redisLockResource&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;service:redisLockResource&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">expiredKey&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;service:expired&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">try&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Redlock 的 ttl 單位是毫秒，設定鎖住時間為 300 秒
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">redisLock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">acquireLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisLockResource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">300&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">retryCount&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// -1 unlimited retries, 0 for no retry
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">expired&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">getRedis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">expiredKey&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span>&lt;span class="nx">expired&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 查詢多張表並且做一些計算
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">doHearvyQueryAndInsert&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 第一個人insert資料後用key做個記號，限制 5 分鐘內不重複取資料
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// ioredis 的 ttl 單位是秒，設定鎖住時間為 300 秒
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">setRedisWithExpiry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">expiredKey&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nb">Date&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="nx">getTime&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="mi">300&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span> &lt;span class="k">catch&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">error&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;catch Error:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">error&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span> &lt;span class="k">finally&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">redisLock&lt;/span> &lt;span class="o">!==&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 查詢insert後的資料
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">queryInsertedData&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 把redisLock釋放掉
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">releaseLock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">redisLock&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="c1">// release lock every time after user querying
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h2 id="redis">Redis&lt;/h2>
-&lt;h3 id="單個redis-node">單個Redis Node&lt;/h3>
-&lt;h4 id="用setnx--px-上鎖搭配lua腳本取鎖釋放鎖">用SETNX + PX 上鎖，搭配lua腳本取鎖、釋放鎖&lt;/h4>
-&lt;p>SETNX: SET if Not exists
-PX: expiration (milliseconds)
-lua腳本：若同一個人在ttl內取得已經上鎖的鎖，則可以把鎖釋放&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 鎖 60 秒&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; SET lock_for_resource_1 uuid1 NX PX &lt;span class="m">60000&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 如果是同一個client，可以取得鎖&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; EVAL &lt;span class="s2">&amp;#34;if redis.call(\&amp;#34;get\&amp;#34;, KEYS[1]) == ARGV[1] then return redis.call(\&amp;#34;del\&amp;#34;, KEYS[1]) else return 0 end&amp;#34;&lt;/span> &lt;span class="m">1&lt;/span> lock_for_resource_1 uuid1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>integer&lt;span class="o">)&lt;/span> &lt;span class="m">1&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 如果是不同的client，無法取得鎖&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">127.0.0.1:6379&amp;gt; EVAL &lt;span class="s2">&amp;#34;if redis.call(\&amp;#34;get\&amp;#34;, KEYS[1]) == ARGV[1] then return redis.call(\&amp;#34;del\&amp;#34;, KEYS[1]) else return 0 end&amp;#34;&lt;/span> &lt;span class="m">1&lt;/span> lock_for_resource_1 uuid2
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>integer&lt;span class="o">)&lt;/span> &lt;span class="m">0&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="多個redis-node">多個Redis Node&lt;/h3>
-&lt;h4 id="redlock演算法">Redlock演算法&lt;/h4>
-&lt;p>Redis 實例數量設定 N &amp;gt;= 3 的奇數&lt;br>
-如果同一個資源被過半數以上的 Redis Nodes 取得，
-且時間小於ttl - 系統允許誤差時間， 則該資源可以被鎖住&lt;/p>
-&lt;p>節點需要在5-50ms取得鎖，否則timeout（防止節點死亡，資源被卡住）&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// redlock.js(node-redis)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// execute redis resource/value lock
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">request&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kd">function&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">_executeScript&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;lockScript&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">[&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">resource&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">length&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">...&lt;/span>&lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ttl&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// loop all redis nodes
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">servers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">forEach&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">function&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">request&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">server&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">loop&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// if locked over half redis nodes and within ttl, lock the resouce
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kr">const&lt;/span> &lt;span class="nx">lock&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Lock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">self&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">resource&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">value&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">start&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">ttl&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">drift&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">attempts&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">retryCount&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">attempts&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">votes&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="nx">quorum&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">lock&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">expiration&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="nb">Date&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">now&lt;/span>&lt;span class="p">())&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">resolve&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h2 id="tools">Tools&lt;/h2>
-&lt;hr>
-&lt;ol>
-&lt;li>node version: v16.19.1&lt;/li>
-&lt;li>redlock &amp;ldquo;^4.2.0&amp;rdquo;(目前最新版是 5.0.0-beta.2，目前仍有bug，建議降版使用 4.2.0 版本)&lt;/li>
-&lt;li>ioredis: &amp;ldquo;^5.4.1&amp;rdquo;&lt;/li>
-&lt;/ol>
-&lt;h2 id="reference">Reference&lt;/h2>
-&lt;hr>
-&lt;p>面试官：说一下红锁RedLock的实现原理？
-&lt;a class="link" href="https://www.cnblogs.com/vipstone/p/18036976" target="_blank" rel="noopener"
->https://www.cnblogs.com/vipstone/p/18036976&lt;/a>&lt;/p>
-&lt;p>Redis Lock (Redlock) 分散式 lock 原理分析與實作:
-&lt;a class="link" href="https://yuanchieh.page/posts/2020/2020-01-14_redis-lock-redlock-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90%E8%88%87%E5%AF%A6%E4%BD%9C/" target="_blank" rel="noopener"
->https://yuanchieh.page/posts/2020/2020-01-14_redis-lock-redlock-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90%E8%88%87%E5%AF%A6%E4%BD%9C/&lt;/a>&lt;/p>
-&lt;p>Distributed Locks with Redis:
-&lt;a class="link" href="https://redis.io/docs/latest/develop/use/patterns/distributed-locks/" target="_blank" rel="noopener"
->https://redis.io/docs/latest/develop/use/patterns/distributed-locks/&lt;/a>&lt;/p>
-&lt;p>node-redlock:
-&lt;a class="link" href="https://github.com/mike-marcacci/node-redlock" target="_blank" rel="noopener"
->https://github.com/mike-marcacci/node-redlock&lt;/a>&lt;/p>
-&lt;p>Achieving Distributed Locking in Node.js with Redis and Redlock:
-&lt;a class="link" href="https://medium.com/@ayushnandanwar003/achieving-distributed-locking-in-node-js-with-redis-and-redlock-0574f5ac333d" target="_blank" rel="noopener"
->https://medium.com/@ayushnandanwar003/achieving-distributed-locking-in-node-js-with-redis-and-redlock-0574f5ac333d&lt;/a>&lt;/p></description></item></channel></rss>
+>https://www.biaodianfu.com/geohash.html&lt;/a>&lt;/p></description></item></channel></rss>
