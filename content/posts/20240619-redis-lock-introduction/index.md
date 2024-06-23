@@ -1,3 +1,13 @@
+---
+title: "Node-redis & Redlock"
+description: Redis 分布式鎖紀錄
+date: 2024-06-23
+slug: redis-lock-introduction
+image: /img/20240619-redis-lock-introduction/redis-lock.png
+categories:
+- Redis
+---
+
 # Redis lock
 1. 性能高（寫在memory）、 最終一致性
 2. 預防死鎖（Deadlock free），Lock在ttl後自動釋放，避免握有lock的client當機，lock不能被釋放
@@ -5,12 +15,11 @@
 4. 互斥（mutual exclusive），同一時間只有一個client可以取得鎖
 
 ## Demo
-***
 
-流程
-{{<img src="/img/20240619-redis-lock-introduction/redis-lock.png" width="30%">}}
+### 流程  
+{{<img src="/img/20240619-redis-lock-introduction/redis-lock.png" width="100%">}}
 
-redlock & ioredis
+### redlock & ioredis
 ```javascript
 // redis.js
 
@@ -141,25 +150,23 @@ if(votes >= quorum && lock.expiration > Date.now()) return resolve(lock);
 ```
 
 ## Tools
-***
 1. node version: v16.19.1  
 2. redlock "^4.2.0"(目前最新版是 5.0.0-beta.2，目前仍有bug，建議降版使用 4.2.0 版本)  
 3. ioredis: "^5.4.1"
 
 
 ## Reference
-***
-面试官：说一下红锁RedLock的实现原理？
+1. 面试官：说一下红锁RedLock的实现原理？
 https://www.cnblogs.com/vipstone/p/18036976
 
-Redis Lock (Redlock) 分散式 lock 原理分析與實作: 
+2. Redis Lock (Redlock) 分散式 lock 原理分析與實作: 
 https://yuanchieh.page/posts/2020/2020-01-14_redis-lock-redlock-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90%E8%88%87%E5%AF%A6%E4%BD%9C/
 
-Distributed Locks with Redis:
+3. Distributed Locks with Redis:
 https://redis.io/docs/latest/develop/use/patterns/distributed-locks/
 
-node-redlock: 
+4. node-redlock: 
 https://github.com/mike-marcacci/node-redlock
 
-Achieving Distributed Locking in Node.js with Redis and Redlock:
+5. Achieving Distributed Locking in Node.js with Redis and Redlock:
 https://medium.com/@ayushnandanwar003/achieving-distributed-locking-in-node-js-with-redis-and-redlock-0574f5ac333d
