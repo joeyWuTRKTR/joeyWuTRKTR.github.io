@@ -8,10 +8,6 @@ hugo new posts/date-file-name/index.md
 hugo server -D
 D for Draft
 
-
-## Download Image
-https://unsplash.com/
-
 ## Markdown
 ### Insert code 
 ```javascript

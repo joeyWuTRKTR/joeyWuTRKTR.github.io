@@ -7,8 +7,8 @@ title: Example Site
 languages:
     en:
         languageName: 中文
-        title: Joey 軟體技術網站
-        description: Joey 軟體技術網站
+        title: Joey Development Blog
+        description: Joey Development Blog
         weight: 2
 
 # Change it to your Disqus shortname before using
@@ -45,11 +45,8 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        subtitle: 全端工程師、衝浪愛好者
-        avatar:
-            enabled: true
-            local: true
-            src: img/avatar.jpg
+        subtitle: NCTU IEM / Full Stack Engineer
+        avatar: img/avatar.jpg
 
     article:
         math: false
@@ -189,18 +186,6 @@ menu:
           url: https://www.linkedin.com/in/wen-jin-wu/?locale=en_US
           params:
               icon: linkedin
-
-        - identifier: instagram
-          name: instagram
-          url: https://www.instagram.com/maomao5986/
-          params:
-              icon: instagram
-
-        - identifier: resume
-          name: resume
-          url: https://www.cakeresume.com/s--KX5vfCk71en_utP2Ssii3g--/joey-wu-wen-jin
-          params:
-              icon: resume
 
 related:
     includeNewer: true
