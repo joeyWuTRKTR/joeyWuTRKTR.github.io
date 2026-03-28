@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Pages on Joey Development Blog</title>
+        <link>https://example.com/page/</link>
+        <description>Recent content in Pages on Joey Development Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language><atom:link href="https://example.com/page/index.xml" rel="self" type="application/rss+xml" /><item>
+            <title>About</title>
+            <link>https://example.com/about/</link>
+            <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+            <guid>https://example.com/about/</guid>
+            <description>&lt;p&gt;Joey NCTU IEM / Full Stack Engineer / Coffee lover / Sports enthusiast&lt;/p&gt;&#xA;&lt;p&gt;Spring-boot / React / React-native / Node.js / MySQL / PostgreSQL / Docker / Kubernetes&lt;/p&gt;&#xA;&lt;p&gt;Feel free to contact me:&lt;/p&gt;&#xA;&lt;p&gt;LinkedIn:&lt;br&gt;&#xA;&lt;a class=&#34;link&#34; href=&#34;https://www.linkedin.com/in/wen-jin-wu/?locale=en_US&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;&#xA;    &gt;https://www.linkedin.com/in/wen-jin-wu/?locale=en_US&lt;/a&gt;&lt;/p&gt;&#xA;</description>
+        </item></channel>
+</rss>
