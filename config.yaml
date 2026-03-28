@@ -186,6 +186,7 @@ menu:
           url: https://www.linkedin.com/in/wen-jin-wu/?locale=en_US
           params:
               icon: linkedin
+              newTab: true
 
 related:
     includeNewer: true

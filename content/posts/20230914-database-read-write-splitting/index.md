@@ -3,7 +3,6 @@ title: "多數據源讀寫分離(Mybatis & JOOQ)"
 date: 2023-09-14T07:43:42+08:00
 description: Mybatis/Jooq多數據源切換、Interface實現AOP註解
 slug: multiple-datasource
-image: /img/20230914-database-read-write-splitting/cover.jpg
 categories:
 - 資料庫
 ---
@@ -36,7 +35,7 @@ Spring boot框架自帶AOP工具
 只需實現自動連接主從庫的設定
 
 ## 專案架構
-![datasource-structure](img/20230914-database-read-write-splitting/datasource-structure.png)
+{{< figure src="/img/20230914-database-read-write-splitting/datasource-structure.png" alt="datasource-structure" >}}
 
 ### DynamicDataSourceEnum.java
 將Master&Slave寫成Enum，方便使用

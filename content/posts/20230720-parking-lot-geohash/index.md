@@ -3,7 +3,6 @@ title: 經緯度網格化 - 淺顯易懂 Geohash 編碼
 description: Geohash 將經緯度變成長方形網格，字串取得相對位置
 date: 2022-07-24
 slug: geohash
-image: /img/20230720-parking-lot-geohash/cover.jpg
 categories:
 - 地理資訊模型
 ---
@@ -14,8 +13,7 @@ categories:
 字串越長、範圍越小、精度越高  
 {{<img src="/img/20230720-parking-lot-geohash/geohash-globe.png" width="80%" height="40%">}}
 
-**試玩看看Geohash(圖片可以點擊)：**
-[![geohash-demo-tool.png](/img/20230720-parking-lot-geohash/geohash-demo-tool.png)](https://phrozen.github.io/geohash/)
+{{<figure src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png" alt="geohash-demo-tool" >}}
 
 ### 優點
 1. 資料庫索引可從經緯度簡化成一列geohash
@@ -71,7 +69,7 @@ categories:
 緯度二進制： 10100 01110  
 
 **將經度交錯放置偶數位、緯度放奇數位**
-![z-curve](/img/20230720-parking-lot-geohash/z-curve.png)
+{{<figure src="/img/20230720-parking-lot-geohash/z-curve.png" alt="z-curve" >}}
 
 
 經緯度的二進制數字合併成 11100 11000 10110 10110
@@ -92,7 +90,7 @@ categories:
 ### 轉成十進制查詢base32字串
 將二進制轉成十進制，依照base32表查詢字串  
 （因容易和數字搞混，base32 去掉 a, i, l, o）
-![base-32](/img/20230720-parking-lot-geohash/base32.png)  
+{{<figure src="/img/20230720-parking-lot-geohash/base32.png" alt="base-32" >}}
 | 二進制 | 十進制 | base32 | 二進制經度數量 | 二進制緯度數量 |
 | - | - | - | - | - |
 | 11100 | 28 | w | 3 | 2 |
@@ -101,9 +99,8 @@ categories:
 | 10110 | 22 | q | 10 | 10 |
 
 
+{{<img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" width="50%" height="50%">}}  
 **得出台北101 geohash字串長方型網格範圍"wsqq"**
-{{<img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" width="50%" height="50%">}}
-
 
 
 ### Geohash長度對應面積表
@@ -127,7 +124,8 @@ categories:
 高併發的API Request會使資料庫SQL無法即時算出資料，造成資料擁塞。
 ### 原本的解法
 在PostgreSQL用車輛經緯度計算，距離所有停車點橢圓球體5公里內的最近停車點  
-![map-circle.png](/img/20230720-parking-lot-geohash/map-circle.png)
+{{<figure src="/img/20230720-parking-lot-geohash/map-circle.png" alt="map-circle" >}}
+
 （比對數萬個停車點）
 ```
 PostgreSQL:
@@ -230,10 +228,10 @@ console.log(bboxes);
 // ]
 ```
 ### 周圍四個角落的經緯度
-![geo-decode-bbox.png](/img/20230720-parking-lot-geohash/geo-decode-bbox.png)
+{{<figure src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png" alt="geo-decode-bbox" >}}
 
 ### 周圍的八個Geohash網格
-![geo-bboxes.png](/img/20230720-parking-lot-geohash/geo-bboxes.png)
+{{<figure src="/img/20230720-parking-lot-geohash/geo-bboxes.png" alt="geo-bboxes" >}}
 
 
 
