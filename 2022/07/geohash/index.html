@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><meta charset='utf-8'>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Geohash 將經緯度變成長方形網格，字串取得相對位置">
 <title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title>
 
 
-<link rel="canonical" href="https://example.com/2022/07/geohash/">
+<link rel="canonical" href="http://localhost:1313/2022/07/geohash/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
@@ -14,7 +14,7 @@
 
 <link rel="stylesheet" href="/scss/style.min.389e156f5e9bb13df5a924cfa99dfb9c39f3e01e68d9e146cd65bdae963be145.css"><meta property='og:title' content="經緯度網格化 - 淺顯易懂 Geohash 編碼">
 <meta property='og:description' content="Geohash 將經緯度變成長方形網格，字串取得相對位置">
-<meta property='og:url' content='https://example.com/2022/07/geohash/'>
+<meta property='og:url' content='http://localhost:1313/2022/07/geohash/'>
 <meta property='og:site_name' content='Joey Development Blog'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-07-24T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-07-24T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="經緯度網格化 - 淺顯易懂 Geohash 編碼">
@@ -75,7 +75,7 @@
                 <li>
                     <a 
                         href='https://www.linkedin.com/in/wen-jin-wu/?locale=en_US'
-                        
+                        target="_blank"
                         title="resume"
                         rel="me"
                     >
@@ -241,7 +241,7 @@
 
 
             <main class="main full-width">
-    <article class="has-image main-article">
+    <article class="main-article">
     <header class="article-header">
 
     <div class="article-details">
@@ -387,9 +387,10 @@
 字串越長、範圍越小、精度越高<br>
 <img src="/img/20230720-parking-lot-geohash/geohash-globe.png" style="width: 80%; height: 40%;">
 </p>
-<p><strong>試玩看看Geohash(圖片可以點擊)：</strong>
-<a class="link" href="https://phrozen.github.io/geohash/"  target="_blank" rel="noopener"
-    ><img alt="geohash-demo-tool.png" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></a></p>
+<figure><img src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png"
+    alt="geohash-demo-tool">
+</figure>
+
 <h3 id="優點">優點
 </h3><ol>
 <li>資料庫索引可從經緯度簡化成一列geohash</li>
@@ -578,7 +579,10 @@
 經度二進制： 11010 11001<br>
 緯度二進制： 10100 01110</p>
 <p><strong>將經度交錯放置偶數位、緯度放奇數位</strong>
-<img alt="z-curve" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></p>
+<figure><img src="/img/20230720-parking-lot-geohash/z-curve.png"
+    alt="z-curve">
+</figure>
+</p>
 <p>經緯度的二進制數字合併成 11100 11000 10110 10110</p>
 <div class="table-wrapper"><table>
   <thead>
@@ -644,7 +648,10 @@
 <h3 id="轉成十進制查詢base32字串">轉成十進制查詢base32字串
 </h3><p>將二進制轉成十進制，依照base32表查詢字串<br>
 （因容易和數字搞混，base32 去掉 a, i, l, o）
-<img alt="base-32" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></p>
+<figure><img src="/img/20230720-parking-lot-geohash/base32.png"
+    alt="base-32">
+</figure>
+</p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -686,9 +693,9 @@
       </tr>
   </tbody>
 </table></div>
-<p><strong>得出台北101 geohash字串長方型網格範圍&quot;wsqq&quot;</strong>
-<img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" style="width: 50%; height: 50%;">
-</p>
+<p><img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" style="width: 50%; height: 50%;">
+<br>
+<strong>得出台北101 geohash字串長方型網格範圍&quot;wsqq&quot;</strong></p>
 <h3 id="geohash長度對應面積表">Geohash長度對應面積表
 </h3><div class="table-wrapper"><table>
   <thead>
@@ -753,8 +760,11 @@
 高併發的API Request會使資料庫SQL無法即時算出資料，造成資料擁塞。</p>
 <h3 id="原本的解法">原本的解法
 </h3><p>在PostgreSQL用車輛經緯度計算，距離所有停車點橢圓球體5公里內的最近停車點<br>
-<img alt="map-circle.png" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px">
-（比對數萬個停車點）</p>
+<figure><img src="/img/20230720-parking-lot-geohash/map-circle.png"
+    alt="map-circle">
+</figure>
+</p>
+<p>（比對數萬個停車點）</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -933,9 +943,15 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="周圍四個角落的經緯度">周圍四個角落的經緯度
-</h3><p><img alt="geo-decode-bbox.png" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></p>
+</h3><figure><img src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png"
+    alt="geo-decode-bbox">
+</figure>
+
 <h3 id="周圍的八個geohash網格">周圍的八個Geohash網格
-</h3><p><img alt="geo-bboxes.png" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></p>
+</h3><figure><img src="/img/20230720-parking-lot-geohash/geo-bboxes.png"
+    alt="geo-bboxes">
+</figure>
+
 <h2 id="參考資料">參考資料
 </h2><h3 id="影片">影片:
 </h3><p>** 1. 如何搜索附近的商家? Geohash （上）**<br>
@@ -1027,7 +1043,7 @@
             </main>
         </div>
         
-<script type="text/javascript" src="/ts/main.acaf849f2b273f6a8368a58b001f336738d0c948d92e79b116467d0c7515f932.js" defer></script>
+<script type="text/javascript" src="/ts/main.d319b858aa618fe9b8de257e3b3a69f940a7a27d3b4f1b55942eb3a300f24761.js" defer></script>
 
 
     </body>
