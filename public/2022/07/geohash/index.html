@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Geohash 將經緯度變成長方形網格，字串取得相對位置">
 <title>經緯度網格化 - 淺顯易懂 Geohash 編碼</title>
 
 
-<link rel="canonical" href="http://localhost:1313/2022/07/geohash/">
+<link rel="canonical" href="https://example.com/2022/07/geohash/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
@@ -14,7 +14,7 @@
 
 <link rel="stylesheet" href="/scss/style.min.389e156f5e9bb13df5a924cfa99dfb9c39f3e01e68d9e146cd65bdae963be145.css"><meta property='og:title' content="經緯度網格化 - 淺顯易懂 Geohash 編碼">
 <meta property='og:description' content="Geohash 將經緯度變成長方形網格，字串取得相對位置">
-<meta property='og:url' content='http://localhost:1313/2022/07/geohash/'>
+<meta property='og:url' content='https://example.com/2022/07/geohash/'>
 <meta property='og:site_name' content='Joey Development Blog'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-07-24T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-07-24T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="經緯度網格化 - 淺顯易懂 Geohash 編碼">
@@ -385,11 +385,9 @@
 </h2><p>將二維座標映射成一串字串，表示一個特定的長方形網格範圍<br>
 台北101的座標(&ldquo;25.03463&rdquo;, &ldquo;121.56441&rdquo;)，在精度8的情況下會轉換成&quot;wsqqqm2t&quot;<br>
 字串越長、範圍越小、精度越高<br>
-<img src="/img/20230720-parking-lot-geohash/geohash-globe.png" style="width: 80%; height: 40%;">
+<img src="/img/20230720-parking-lot-geohash/geohash-globe.png" style="width: 60%; height: 20%;">
 </p>
-<figure><img src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png"
-    alt="geohash-demo-tool">
-</figure>
+<img src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png" style="width: 70%; height: 70%;">
 
 <h3 id="優點">優點
 </h3><ol>
@@ -579,9 +577,7 @@
 經度二進制： 11010 11001<br>
 緯度二進制： 10100 01110</p>
 <p><strong>將經度交錯放置偶數位、緯度放奇數位</strong>
-<figure><img src="/img/20230720-parking-lot-geohash/z-curve.png"
-    alt="z-curve">
-</figure>
+<img src="/img/20230720-parking-lot-geohash/z-curve.png" style="width: ; height: ;">
 </p>
 <p>經緯度的二進制數字合併成 11100 11000 10110 10110</p>
 <div class="table-wrapper"><table>
@@ -648,9 +644,7 @@
 <h3 id="轉成十進制查詢base32字串">轉成十進制查詢base32字串
 </h3><p>將二進制轉成十進制，依照base32表查詢字串<br>
 （因容易和數字搞混，base32 去掉 a, i, l, o）
-<figure><img src="/img/20230720-parking-lot-geohash/base32.png"
-    alt="base-32">
-</figure>
+<img src="/img/20230720-parking-lot-geohash/base32.png" style="width: ; height: ;">
 </p>
 <div class="table-wrapper"><table>
   <thead>
@@ -693,7 +687,7 @@
       </tr>
   </tbody>
 </table></div>
-<p><img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" style="width: 50%; height: 50%;">
+<p><img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" style="width: 40%; height: 40%;">
 <br>
 <strong>得出台北101 geohash字串長方型網格範圍&quot;wsqq&quot;</strong></p>
 <h3 id="geohash長度對應面積表">Geohash長度對應面積表
@@ -760,9 +754,7 @@
 高併發的API Request會使資料庫SQL無法即時算出資料，造成資料擁塞。</p>
 <h3 id="原本的解法">原本的解法
 </h3><p>在PostgreSQL用車輛經緯度計算，距離所有停車點橢圓球體5公里內的最近停車點<br>
-<figure><img src="/img/20230720-parking-lot-geohash/map-circle.png"
-    alt="map-circle">
-</figure>
+<img src="/img/20230720-parking-lot-geohash/map-circle.png" style="width: 30%; height: 30%;">
 </p>
 <p>（比對數萬個停車點）</p>
 <div class="highlight"><div class="chroma">
@@ -793,8 +785,9 @@
 <ol>
 <li>如果層級五有找到停車點（紅色區域，5km x 5km = 25平方公里），找到停車點-&gt;query</li>
 <li>如果層級五沒有找到停車點，找同層級的其他八個區域（綠色區域），總面積達到225平方公里（25km2 x 9 = 225km2），找到停車點-&gt;query</li>
-<li>如果層級五的九宮格都沒有找到，則沒有滿足條件的停車點
-<img alt="map-geo.png" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"></li>
+<li>如果層級五的九宮格都沒有找到，則沒有滿足條件的停車點<br>
+<img src="/img/20230720-parking-lot-geohash/map-geo.png" style="width: 30%; height: 30%;">
+</li>
 </ol>
 <h2 id="結論">結論：
 </h2><h3 id="1-減少查詢sql次數">1. 減少查詢SQL次數
@@ -943,14 +936,10 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="周圍四個角落的經緯度">周圍四個角落的經緯度
-</h3><figure><img src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png"
-    alt="geo-decode-bbox">
-</figure>
+</h3><img src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png" style="width: 50%; height: 50%;">
 
 <h3 id="周圍的八個geohash網格">周圍的八個Geohash網格
-</h3><figure><img src="/img/20230720-parking-lot-geohash/geo-bboxes.png"
-    alt="geo-bboxes">
-</figure>
+</h3><img src="/img/20230720-parking-lot-geohash/geo-bboxes.png" style="width: 50%; height: 50%;">
 
 <h2 id="參考資料">參考資料
 </h2><h3 id="影片">影片:
@@ -1043,7 +1032,7 @@
             </main>
         </div>
         
-<script type="text/javascript" src="/ts/main.d319b858aa618fe9b8de257e3b3a69f940a7a27d3b4f1b55942eb3a300f24761.js" defer></script>
+<script type="text/javascript" src="/ts/main.acaf849f2b273f6a8368a58b001f336738d0c948d92e79b116467d0c7515f932.js" defer></script>
 
 
     </body>

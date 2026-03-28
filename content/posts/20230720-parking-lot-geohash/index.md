@@ -11,9 +11,9 @@ categories:
 將二維座標映射成一串字串，表示一個特定的長方形網格範圍  
 台北101的座標("25.03463", "121.56441")，在精度8的情況下會轉換成"wsqqqm2t"  
 字串越長、範圍越小、精度越高  
-{{<img src="/img/20230720-parking-lot-geohash/geohash-globe.png" width="80%" height="40%">}}
+{{<img src="/img/20230720-parking-lot-geohash/geohash-globe.png" width="60%" height="20%">}}
 
-{{<figure src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png" alt="geohash-demo-tool" >}}
+{{<img src="/img/20230720-parking-lot-geohash/geohash-demo-tool.png" alt="geohash-demo-tool" width="70%" height="70%">}}
 
 ### 優點
 1. 資料庫索引可從經緯度簡化成一列geohash
@@ -69,7 +69,7 @@ categories:
 緯度二進制： 10100 01110  
 
 **將經度交錯放置偶數位、緯度放奇數位**
-{{<figure src="/img/20230720-parking-lot-geohash/z-curve.png" alt="z-curve" >}}
+{{<img src="/img/20230720-parking-lot-geohash/z-curve.png" alt="z-curve" >}}
 
 
 經緯度的二進制數字合併成 11100 11000 10110 10110
@@ -90,7 +90,7 @@ categories:
 ### 轉成十進制查詢base32字串
 將二進制轉成十進制，依照base32表查詢字串  
 （因容易和數字搞混，base32 去掉 a, i, l, o）
-{{<figure src="/img/20230720-parking-lot-geohash/base32.png" alt="base-32" >}}
+{{<img src="/img/20230720-parking-lot-geohash/base32.png" alt="base-32" >}}
 | 二進制 | 十進制 | base32 | 二進制經度數量 | 二進制緯度數量 |
 | - | - | - | - | - |
 | 11100 | 28 | w | 3 | 2 |
@@ -99,7 +99,7 @@ categories:
 | 10110 | 22 | q | 10 | 10 |
 
 
-{{<img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" width="50%" height="50%">}}  
+{{<img src="/img/20230720-parking-lot-geohash/geohash-p-4.png" width="40%" height="40%">}}  
 **得出台北101 geohash字串長方型網格範圍"wsqq"**
 
 
@@ -124,7 +124,7 @@ categories:
 高併發的API Request會使資料庫SQL無法即時算出資料，造成資料擁塞。
 ### 原本的解法
 在PostgreSQL用車輛經緯度計算，距離所有停車點橢圓球體5公里內的最近停車點  
-{{<figure src="/img/20230720-parking-lot-geohash/map-circle.png" alt="map-circle" >}}
+{{<img src="/img/20230720-parking-lot-geohash/map-circle.png" alt="map-circle" width="30%" height="30%">}}
 
 （比對數萬個停車點）
 ```
@@ -145,8 +145,8 @@ LIMIT 1
 **分析步驟：**
 1. 如果層級五有找到停車點（紅色區域，5km x 5km = 25平方公里），找到停車點->query
 2. 如果層級五沒有找到停車點，找同層級的其他八個區域（綠色區域），總面積達到225平方公里（25km2 x 9 = 225km2），找到停車點->query
-3. 如果層級五的九宮格都沒有找到，則沒有滿足條件的停車點
-   ![map-geo.png](/img/20230720-parking-lot-geohash/map-geo.png)
+3. 如果層級五的九宮格都沒有找到，則沒有滿足條件的停車點  
+   {{<img src="/img/20230720-parking-lot-geohash/map-geo.png" alt="map-geo" width="30%" height="30%">}}
 
 ## 結論：
 ### 1. 減少查詢SQL次數
@@ -228,10 +228,10 @@ console.log(bboxes);
 // ]
 ```
 ### 周圍四個角落的經緯度
-{{<figure src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png" alt="geo-decode-bbox" >}}
+{{<img src="/img/20230720-parking-lot-geohash/geo-decode-bbox.png" alt="geo-decode-bbox" width="50%" height="50%">}}
 
 ### 周圍的八個Geohash網格
-{{<figure src="/img/20230720-parking-lot-geohash/geo-bboxes.png" alt="geo-bboxes" >}}
+{{<img src="/img/20230720-parking-lot-geohash/geo-bboxes.png" alt="geo-bboxes" width="50%" height="50%">}}
 
 
 

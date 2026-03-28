@@ -2,31 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://example.com/</loc>
     <lastmod>2023-09-14T07:43:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://example.com/categories/</loc>
     <lastmod>2023-09-14T07:43:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://example.com/posts/</loc>
     <lastmod>2023-09-14T07:43:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/2023/09/multiple-datasource/</loc>
+    <loc>https://example.com/2023/09/multiple-datasource/</loc>
     <lastmod>2023-09-14T07:43:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E8%B3%87%E6%96%99%E5%BA%AB/</loc>
+    <loc>https://example.com/categories/%E8%B3%87%E6%96%99%E5%BA%AB/</loc>
     <lastmod>2023-09-14T07:43:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E5%9C%B0%E7%90%86%E8%B3%87%E8%A8%8A%E6%A8%A1%E5%9E%8B/</loc>
+    <loc>https://example.com/categories/%E5%9C%B0%E7%90%86%E8%B3%87%E8%A8%8A%E6%A8%A1%E5%9E%8B/</loc>
     <lastmod>2022-07-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/2022/07/geohash/</loc>
+    <loc>https://example.com/2022/07/geohash/</loc>
     <lastmod>2022-07-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/about/</loc>
+    <loc>https://example.com/about/</loc>
   </url><url>
-    <loc>http://localhost:1313/page/</loc>
+    <loc>https://example.com/page/</loc>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://example.com/tags/</loc>
   </url>
 </urlset>
